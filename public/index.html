@@ -167,7 +167,8 @@ a{color:var(--acc-dark)}
           <label class="chk"><input type="checkbox" id="adv"><span>Advanced transforms<small>bwt / delta / filters / zdict — extra ratio</small></span></label>
         </fieldset>
         <fieldset class="set">
-          <legend>Images</legend>
+          <legend>Images · Image task only</legend>
+          <p style="font-size:12px;color:var(--mut);margin:0 0 10px">These apply only when the <b>Image</b> task above is selected. If your file is already under the target, it is kept as is — nothing to shrink.</p>
           <label class="f" for="target">Target size</label>
           <div class="ctl"><select id="target">
             <option value="409600">400 KB</option>
@@ -184,7 +185,7 @@ a{color:var(--acc-dark)}
           <div class="ctl"><select id="fmt"><option value="auto" selected>Auto (WebP)</option><option>WEBP</option><option>JPEG</option><option>PNG</option><option>AVIF</option></select></div>
         </fieldset>
         <fieldset class="set">
-          <legend>Output</legend>
+          <legend>Output · compress task</legend>
           <label class="f" for="resp">Response type</label>
           <div class="ctl"><select id="resp"><option value="bin" selected>Binary download</option><option value="json">JSON + base64</option></select></div>
           <div id="benchOpts" style="display:none">
@@ -306,7 +307,10 @@ const tb=targetBytes(), fm=$("fmt").value;
 const out=await xhrPost(`api/image?target_bytes=${tb}&mode=${mode}&fmt=${fm}`,f);
 if(out.json&&out.json.error)throw new Error(out.json.error);
 if(out.json){showStats(out.json)}
-else{lastBlob=new Blob([out.buf],{type:"image/webp"});lastName=f.name.replace(/\.[^.]+$/,"")+".tq.webp";$("dl").disabled=false;showStats({orig:f.size,new:lastBlob.size});log(`Image: ${f.name} ${fmt(f.size)} → ${fmt(lastBlob.size)}`)}
+else{lastBlob=new Blob([out.buf],{type:"image/webp"});lastName=f.name.replace(/\.[^.]+$/,"")+".tq.webp";$("dl").disabled=false;
+const hit=((out.headers||"").match(/x-tq-hit:\s*(\d)/i)||[])[1]==="1";
+const verdict=lastBlob.size<=tb?(hit?"Target met":"Already under target — kept as is"):"Over target";
+showStats({orig:f.size,new:lastBlob.size,verdict});log(`Image: ${f.name} ${fmt(f.size)} → ${fmt(lastBlob.size)} (target ${fmt(tb)}): ${verdict}`)}
 $("status").textContent="Image compressed";
 }else{
 const endpoint="api/compress";
