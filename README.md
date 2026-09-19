@@ -1,5 +1,7 @@
 # TurboQuant v2 — مكتبة ضغط موحدة لكل الملفات 🇪🇬
 
+[![CI](https://github.com/aslamalkarywk7/TurboQuant/actions/workflows/ci.yml/badge.svg)](https://github.com/aslamalkarywk7/TurboQuant/actions/workflows/ci.yml)
+
 ## التركيب بنقرة واحدة
 ```bash
 pip install "turboquant[max]"          # موصى به (zstd + brotli)

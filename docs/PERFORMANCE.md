@@ -54,3 +54,19 @@ ultra     brotli        1.0002  -0.02   2.812   0.36    True
 - البيانات العشوائية/المشفرة/المضغوطة أصلاً (MP4/ZIP): لا تنضغط (`ratio≈1.0`) — **وهذا صدق وليس فشلاً**، والجودة تبقى 100%.
 - `fast` للسرعة، `balanced` للاستخدام اليومي، `max/ultra` لأقصى توفير على حساب الوقت.
 - أعد القياس على ملفك: `python -m turboquant bench data.bin`
+
+## مقارنة مع المنافسين (tq-balanced ضد gzip -9 و zstd -9)
+
+الجهاز: Windows + Python 3.12 | التاريخ: 2026-09-19 | كل الصفوف verified=True.
+
+```
+file         tool         size      ratio   comp_s  verified
+text-1MB     tq-balanced  431       0.0004  0.821   True
+text-1MB     gzip-9       3668      0.0035  0.016   True
+text-1MB     zstd-9       1170      0.0011  0.004   True
+random-256KB tq-balanced  262453    1.0012  0.294   True
+random-256KB gzip-9       262242    1.0004  0.017   True
+random-256KB zstd-9       262159    1.0001  0.001   True
+```
+
+الخلاصة الصادقة: على النصوص المتكررة يتفوق tq بالنسبة بفضل إزالة التكرار، لكنه أبطأ في الضغط من gzip/zstd. وعلى البيانات العشوائية يتساوى الجميع عند ratio≈1.0 (لا شيء يُضغط) — والجودة تبقى 100% دائماً.
