@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+# Tests & tools
+.pytest_cache/
+.coverage
+htmlcov/
+# OS & editors
+.DS_Store
+Thumbs.db
+.vscode/
+*.swp
+# Local turbiquant server / bench leftovers (keep repo clean)
+*.tmp.mp4
+*.tar.tmp

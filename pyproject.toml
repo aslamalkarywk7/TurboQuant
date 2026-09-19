@@ -1,0 +1,45 @@
+[project]
+name = "turboquant"
+version = "2.4.0"
+description = "TurboQuant - ضغط lossless لكل الملفات بدون فقد جودة + صور lossy + bindings لكل اللغات"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "TurboQuant Contributors" }]
+keywords = ["compression", "lossless", "dedup", "zstd", "backup", "arabic"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: System :: Archiving :: Compression",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Natural Language :: Arabic",
+  "Natural Language :: English",
+]
+dependencies = ["Pillow>=10.0"]
+[project.optional-dependencies]
+max = ["zstandard>=0.22", "brotli>=1.1"]
+full = ["zstandard>=0.22", "brotli>=1.1", "pikepdf>=8", "soundfile>=0.12"]
+secure = ["cryptography>=41"]
+dev = ["pytest>=7", "build", "twine"]
+[project.urls]
+Homepage = "https://github.com/TurboQuant/turboquant"
+Documentation = "https://github.com/TurboQuant/turboquant#readme"
+Repository = "https://github.com/TurboQuant/turboquant"
+"Bug Tracker" = "https://github.com/TurboQuant/turboquant/issues"
+[project.scripts]
+turboquant = "turboquant.cli:main"
+turboquant-gui = "gui.app:main"
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+[tool.setuptools.packages.find]
+include = ["turboquant*", "gui*"]
+[tool.pytest.ini_options]
+testpaths = ["tests"]

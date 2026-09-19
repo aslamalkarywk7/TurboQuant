@@ -1,0 +1,9 @@
+include README.md LICENSE CHANGELOG.md
+include docs/*.md bindings/README.md
+include package.json Dockerfile vercel.json runtime.txt
+recursive-include public *.html *.css *.js
+recursive-include api *.py
+recursive-include examples *.py *.js *.java *.cs *.go
+recursive-include bindings *.js *.mjs *.java *.cs *.go *.md
+global-exclude __pycache__ *.pyc *.pyo
+global-exclude .pytest_cache .egg-info

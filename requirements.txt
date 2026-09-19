@@ -1,0 +1,6 @@
+Pillow>=10.0
+zstandard>=0.22
+brotli>=1.1
+pytest>=7
+cryptography>=41  # extra: secure (تشفير .tqze)
+# extras الكاملة في pyproject: full (pikepdf/soundfile للPDF/الصوت)

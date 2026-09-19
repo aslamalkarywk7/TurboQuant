@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TurboQuant — Free Control Console | Lossless compression without quality loss</title>
+<meta name="description" content="TurboQuant Web Console — lossless compression for every file + 800KB images + decompress + analyze + certificate + benchmark. Runs locally and on Vercel.">
+<style>
+:root{--bg:#0b1020;--card:#141b32;--line:#243056;--txt:#eaf0ff;--mut:#93a1c7;--acc:#38e1a2;--acc2:#5aa2ff;--warn:#ffb84d;--err:#ff6b6b}
+*{box-sizing:border-box}body{margin:0;font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:radial-gradient(1200px 600px at 20% -10%,#1b2a5e 0%,var(--bg) 55%);color:var(--txt);min-height:100vh}
+header{padding:22px 18px 8px;max-width:1080px;margin:auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:grid;place-items:center;font-weight:900;color:#06121f;font-size:22px}
+h1{font-size:20px;margin:0}small{color:var(--mut)}
+main{max-width:1080px;margin:auto;padding:14px 18px 60px;display:grid;gap:14px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));border:1px solid var(--line);border-radius:16px;padding:16px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+label{font-size:13px;color:var(--mut)}
+select,input[type=text],input[type=number]{background:#0d1430;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:14px}
+button{background:linear-gradient(135deg,var(--acc),#7df0c6);border:0;color:#06121f;font-weight:800;border-radius:11px;padding:10px 16px;cursor:pointer;font-size:14px}
+button.ghost{background:#0d1430;color:var(--txt);border:1px solid var(--line)}
+button:disabled{opacity:.5;cursor:not-allowed}
+#drop{border:2px dashed var(--line);border-radius:16px;padding:26px;text-align:center;color:var(--mut);transition:.2s;background:rgba(90,162,255,.05)}
+#drop.over{border-color:var(--acc);color:var(--txt);background:rgba(56,225,162,.08)}
+#files{margin:10px 0 0;padding:0;list-style:none;display:grid;gap:8px}
+#files li{background:#0d1430;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;display:flex;justify-content:space-between;gap:8px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:#0d1430;color:var(--mut);cursor:pointer;font-size:13px}
+.tab.active{background:var(--txt);color:#0b1020;font-weight:800}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:800px){.grid2{grid-template-columns:1fr}}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:10px}
+.stat{background:#0d1430;border:1px solid var(--line);border-radius:12px;padding:10px;font-size:12px;color:var(--mut)}
+.stat b{display:block;font-size:17px;color:var(--txt);margin-top:4px;word-break:break-all}
+#barWrap{background:#0d1430;border:1px solid var(--line);border-radius:999px;height:14px;overflow:hidden;margin-top:10px}
+#bar{height:100%;width:0%;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .15s}
+#log{background:#050816;border:1px solid var(--line);border-radius:12px;padding:12px;font-family:Consolas,monospace;font-size:12.5px;max-height:300px;overflow:auto;white-space:pre-wrap}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;border:1px solid var(--line)}
+.ok{color:var(--acc)}.bad{color:var(--err)}a{color:var(--acc)}
+footer{max-width:1080px;margin:auto;padding:0 18px 40px;color:var(--mut);font-size:12.5px}
+code{background:#0d1430;padding:2px 6px;border-radius:6px;border:1px solid var(--line)}
+ol.howto{margin:8px 0 0;padding-left:20px;color:var(--mut);font-size:13.5px;line-height:1.9}
+ol.howto b{color:var(--txt)}
+table.api{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:8px}
+table.api td,table.api th{border:1px solid var(--line);padding:6px 8px;text-align:left}
+table.api th{color:var(--txt);background:#0d1430}
+.chk{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--mut)}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">TQ</div>
+<div>
+<h1>TurboQuant — Free Control Console <small>v2.4</small></h1>
+<small>Lossless by default (bit-identical + sha256) • 800KB lossy images only on demand • Same UI locally and on <b>Vercel</b></small>
+</div>
+<div style="margin-left:auto" class="row">
+<span id="health" class="pill">Checking connection…</span>
+<a href="https://vercel.com/new" target="_blank" rel="noopener"><button class="ghost">Deploy to Vercel ▲</button></a>
+</div>
+</header>
+<main>
+<div class="card">
+<b>📖 How to use (30 seconds)</b>
+<ol class="howto">
+<li><b>Pick a task</b> below: <b>Auto</b> (recommended) for anything, <b>Lossless</b> for max safety, <b>Image 800KB</b> for tiny photos, <b>Decompress</b> for <code>.tqz</code> files.</li>
+<li><b>Choose your options freely</b>: compression <b>mode</b> (fast → ultra), <b>advanced</b> transforms for extra ratio, image <b>target size</b> + <b>format</b>, response as <b>binary download</b> or <b>JSON+base64</b>.</li>
+<li><b>Drop files</b> into the box (or Browse). On Vercel one request ≈ 4.5MB max — for bigger files run locally: <code>python -m turboquant serve</code>.</li>
+<li>Press <b>▶ Run</b>, watch the <b>progress bar</b>, read the <b>stats</b> (original → new, codec, verified), then <b>⬇ Download</b>.</li>
+<li>Trust but verify: use <b>Analyze + Certificate</b> to see entropy, suggested pipeline and PASS/FAIL, or <b>Benchmark</b> to compare modes on your file.</li>
+</ol>
+</div>
+<div class="card">
+<div class="tabs" id="tabs">
+<div class="tab active" data-m="auto">🤖 Smart auto</div>
+<div class="tab" data-m="lossless">📦 Lossless compress</div>
+<div class="tab" data-m="image">🖼️ Image 800KB</div>
+<div class="tab" data-m="decompress">📂 Decompress</div>
+<div class="tab" data-m="analyze">🔍 Analyze + certificate</div>
+<div class="tab" data-m="bench">📊 Benchmark</div>
+</div>
+<div style="height:12px"></div>
+<div class="row">
+<label>Mode — your free choice <select id="mode">
+<option value="fast">fast — fastest</option>
+<option value="balanced" selected>balanced — recommended</option>
+<option value="max">max — strongest balanced</option>
+<option value="ultra">ultra — max compression</option>
+<option value="extreme">extreme — aggressive</option>
+</select></label>
+<label class="chk"><input type="checkbox" id="adv"> advanced (bwt / delta / filters / zdict)</label>
+<label>Image target <select id="target">
+<option value="409600">400KB</option>
+<option value="819200" selected>800KB</option>
+<option value="2097152">2MB</option>
+<option value="5242880">5MB</option>
+<option value="custom">custom…</option>
+</select></label>
+<label id="customWrap" style="display:none">Custom KB <input type="number" id="customKB" value="800" min="50" max="50000" style="width:90px"></label>
+<label>Image format <select id="fmt"><option value="auto" selected>auto (WEBP)</option><option>WEBP</option><option>JPEG</option><option>PNG</option><option>AVIF</option></select></label>
+<label>Response <select id="resp"><option value="bin" selected>binary download</option><option value="json">JSON + base64</option></select></label>
+</div>
+<div class="row" id="benchOpts" style="display:none;margin-top:8px">
+<span style="font-size:13px;color:var(--mut)">Benchmark modes (choose freely):</span>
+<label class="chk"><input type="checkbox" class="bm" value="fast" checked> fast</label>
+<label class="chk"><input type="checkbox" class="bm" value="balanced" checked> balanced</label>
+<label class="chk"><input type="checkbox" class="bm" value="max" checked> max</label>
+<label class="chk"><input type="checkbox" class="bm" value="ultra" checked> ultra</label>
+</div>
+<div id="drop" style="margin-top:12px">Drag &amp; drop files here or <button class="ghost" id="pick" type="button">Browse files</button><br><small>Vercel single-request limit ≈ 4.5MB — for large files run locally: <code>python -m turboquant serve</code></small>
+<input type="file" id="file" multiple hidden>
+</div>
+<ul id="files"></ul>
+<div class="row" style="margin-top:12px">
+<button id="go">▶ Run</button>
+<button class="ghost" id="dl" disabled>⬇ Download result</button>
+<button class="ghost" id="clear">Clear</button>
+<span id="status" style="font-size:13px;color:var(--mut)"></span>
+</div>
+<div id="barWrap"><div id="bar"></div></div>
+<div class="stats" id="stats"></div>
+</div>
+<div class="grid2">
+<div class="card"><b>📜 Log</b><div id="log" style="margin-top:8px">Ready.
+</div></div>
+<div class="card"><b>⚡ Full power cheat-sheet</b>
+<div style="font-size:13.5px;color:var(--mut);line-height:1.9;margin-top:8px">
+• <b>Any file</b> → Auto / Lossless + <code>max</code> + <code>advanced</code> for best ratio.<br>
+• <b>Huge photo → 800KB</b> → Image tab + pick target + format.<br>
+• <b>.tqz file</b> → Decompress tab (sha256 verified automatically).<br>
+• <b>Before compressing</b> → Analyze shows entropy + suggested transform.<br>
+• <b>After compressing</b> → Certificate PASS/FAIL + Benchmark compares modes.<br>
+</div>
+<table class="api">
+<tr><th>REST (any language)</th><th>What it does</th></tr>
+<tr><td><code>POST /api/compress?mode=max</code></td><td>compress → .tqz</td></tr>
+<tr><td><code>POST /api/decompress</code></td><td>decompress → original</td></tr>
+<tr><td><code>POST /api/image?target_bytes=819200</code></td><td>photo → 800KB</td></tr>
+<tr><td><code>POST /api/analyze</code></td><td>entropy + suggestion</td></tr>
+<tr><td><code>POST /api/cert</code></td><td>certificate</td></tr>
+<tr><td><code>POST /api/bench</code></td><td>compare modes</td></tr>
+<tr><td><code>GET /api/health</code></td><td>liveness + codecs</td></tr>
+</table>
+</div>
+</div>
+</main>
+<footer>Deploy on Vercel: upload this folder as-is → <code>vercel --prod</code>. UI lives in <code>/public/index.html</code>, API in <code>/api/*.py</code>. Locally: <code>python -m turboquant serve --port 8765</code> then open <code>http://localhost:8765/</code>.</footer>
+<script>
+const $=id=>document.getElementById(id);
+let files=[], lastBlob=null, lastName="out.bin";
+const log=m=>{const e=$("log");e.textContent+=m+"\n";e.scrollTop=e.scrollHeight};
+const fmt=n=>n==null?"—":n>=1048576?(n/1048576).toFixed(2)+" MB":n>=1024?(n/1024).toFixed(1)+" KB":n+" B";
+function setBar(p){$("bar").style.width=(p*100).toFixed(1)+"%"}
+function renderFiles(){const ul=$("files");ul.innerHTML="";files.forEach((f,i)=>{const li=document.createElement("li");li.innerHTML=`<span>${f.name} — ${fmt(f.size)}</span><button class="ghost" data-i="${i}">✕</button>`;ul.appendChild(li)});ul.querySelectorAll("button").forEach(b=>b.onclick=()=>{files.splice(+b.dataset.i,1);renderFiles()})}
+$("pick").onclick=()=>$("file").click();
+$("file").onchange=e=>{files.push(...e.target.files);renderFiles();$("status").textContent=files.length+" file(s)";};
+const drop=$("drop");["dragover","dragenter"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over")}));["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over")}));drop.addEventListener("drop",e=>{files.push(...e.dataTransfer.files);renderFiles()});
+$("clear").onclick=()=>{files=[];renderFiles();$("stats").innerHTML="";$("dl").disabled=true;setBar(0);$("status").textContent=""};
+$("target").onchange=()=>{$("customWrap").style.display=$("target").value==="custom"?"inline":"none"};
+let curTab="auto";
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));t.classList.add("active");curTab=t.dataset.m;$("benchOpts").style.display=curTab==="bench"?"flex":"none"});
+function targetBytes(){if($("target").value==="custom"){const kb=Math.max(50,Math.min(50000,+($("customKB").value||800)));return kb*1024}return +$("target").value}
+async function health(){try{const r=await fetch("api/health");const j=await r.json();$("health").textContent="● "+(j.ok?"connected — "+(j.codecs||[]).join("/"):"API");$("health").className="pill ok"}catch{try{const r=await fetch("/health");if(r.ok){$("health").textContent="● local (legacy)";$("health").className="pill ok";return}}catch{}$("health").textContent="○ offline";$("health").className="pill"}}
+health();setInterval(health,15000);
+function xhrPost(url, file){
+return new Promise((res,rej)=>{
+const x=new XMLHttpRequest();x.open("POST",url);x.responseType="arraybuffer";
+x.upload.onprogress=e=>{if(e.lengthComputable)setBar(e.loaded/e.total*0.5)};
+x.onprogress=e=>{if(e.lengthComputable)setBar(0.5+e.loaded/e.total*0.5)};
+x.onload=()=>{setBar(1);
+const ct=x.getResponseHeader("Content-Type")||"";
+if(x.status>=200&&x.status<300){
+if(ct.includes("application/json")){try{res({json:JSON.parse(new TextDecoder().decode(x.response))})}catch(e){rej(new Error("Corrupt JSON reply"))}}
+else res({buf:x.response,headers:x.getAllResponseHeaders()});
+}else{let m="Error "+x.status;try{m=JSON.parse(new TextDecoder().decode(x.response)).error||m}catch{}rej(new Error(m))}
+};
+x.onerror=()=>rej(new Error("Connection failed"));x.send(file);
+})}
+function showStats(o){const s=$("stats");const rows=[["Original",fmt(o.orig)],["New",fmt(o.new)],["Ratio",o.ratio??"—"],["Saved",o.saved_pct!=null?o.saved_pct+"%":"—"],["Codec",o.codec||"—"],["Pipeline",o.pipeline||o.method||"—"],["Verified",o.verified===true?"✅":o.verdict||"—"],["Time",o.elapsed_s!=null?o.elapsed_s+"s":"—"]];s.innerHTML=rows.map(([k,v])=>`<div class="stat">${k}<b>${v}</b></div>`).join("")}
+$("go").onclick=async()=>{
+if(!files.length){alert("Choose a file first");return}
+const f=files[0], mode=$("mode").value, adv=$("adv").checked?"1":"0", resp=$("resp").value;
+$("dl").disabled=true;lastBlob=null;setBar(0.02);$("status").textContent="Uploading & processing…";
+try{
+if(curTab==="analyze"){
+const r=await fetch(`api/analyze`,{method:"POST",body:f});const j=await r.json();if(!r.ok)throw new Error(j.error||r.status);
+log(`🔍 ${f.name}: kind=${j.kind} entropy=${j.entropy} verdict=${j.verdict}\nSuggestion: ${JSON.stringify(j.suggestion)}`);showStats({orig:f.size,codec:j.kind});$("status").textContent="Analyzed";
+}else if(curTab==="bench"){
+const modes=[...document.querySelectorAll(".bm:checked")].map(x=>x.value).join(",")||"fast,balanced,max,ultra";
+const r=await fetch(`api/bench?modes=${modes}&advanced=${adv}`,{method:"POST",body:f});const j=await r.json();if(!r.ok)throw new Error(j.error||r.status);
+log("📊 benchmark:\n"+j.rows.map(x=>`${x.mode} ${x.codec} ${x.new} (${x.saved_pct}%) ${x.compress_s}s verified=${x.verified}`).join("\n"));showStats({orig:f.size,new:j.rows[0]?.new,codec:"bench"});$("status").textContent="Benchmark done";
+}else if(curTab==="decompress"){
+const out=await xhrPost(`api/decompress`,f);if(out.json){showStats(out.json)}
+else{lastBlob=new Blob([out.buf]);lastName=f.name.replace(/\.tqz$/i,"")+".out";$("dl").disabled=false;log(`📂 Decompressed: ${f.name} → ${lastName} (${fmt(lastBlob.size)})`);showStats({orig:f.size,new:lastBlob.size})}$("status").textContent="Decompressed";
+}else if(curTab==="image"){
+const tb=targetBytes(), fm=$("fmt").value;
+const out=await xhrPost(`api/image?target_bytes=${tb}&mode=${mode}&fmt=${fm}`,f);
+if(out.json&&out.json.error)throw new Error(out.json.error);
+if(out.json){showStats(out.json)}
+else{lastBlob=new Blob([out.buf],{type:"image/webp"});lastName=f.name.replace(/\.[^.]+$/,"")+".tq.webp";$("dl").disabled=false;showStats({orig:f.size,new:lastBlob.size});log(`🖼️ Image: ${f.name} ${fmt(f.size)} → ${fmt(lastBlob.size)}`)}
+$("status").textContent="Image compressed";
+}else{
+const endpoint="api/compress";
+const suffix=resp==="json"?"&format=json":"";
+const out=await xhrPost(`${endpoint}?mode=${mode}&advanced=${adv}&filename=${encodeURIComponent(f.name)}${suffix}`,f);
+if(out.json&&out.json.error)throw new Error(out.json.error);
+if(out.json&&out.json.output_b64){const bin=Uint8Array.from(atob(out.json.output_b64),c=>c.charCodeAt(0));lastBlob=new Blob([bin]);lastName=(out.json.filename||f.name)+".tqz";$("dl").disabled=false;showStats(out.json);log(`📦 ${f.name}: ${fmt(out.json.orig)} → ${fmt(out.json.new)} codec=${out.json.codec} verified=${out.json.verified}`)}
+else if(out.buf){lastBlob=new Blob([out.buf]);const disp=(out.headers.match(/filename="?([^"\n]+)"?/i)||[])[1]||f.name+".tqz";lastName=decodeURIComponent(disp);$("dl").disabled=false;log(`📦 Done: ${fmt(f.size)} → ${fmt(lastBlob.size)}`);showStats({orig:f.size,new:lastBlob.size})}
+$("status").textContent="Compressed ✅";
+}
+}catch(e){$("status").textContent="❌ "+e.message;log("❌ "+e.message)}
+};
+$("dl").onclick=()=>{if(!lastBlob)return;const a=document.createElement("a");a.href=URL.createObjectURL(lastBlob);a.download=lastName;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000)};
+</script>
+</body>
+</html>
