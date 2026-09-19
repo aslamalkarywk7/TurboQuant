@@ -3,145 +3,249 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TurboQuant — Free Control Console | Lossless compression without quality loss</title>
+<title>TurboQuant — Control Console | Lossless compression without quality loss</title>
 <meta name="description" content="TurboQuant Web Console — lossless compression for every file + 800KB images + decompress + analyze + certificate + benchmark. Runs locally and on Vercel.">
 <style>
-:root{--bg:#0b1020;--card:#141b32;--line:#243056;--txt:#eaf0ff;--mut:#93a1c7;--acc:#38e1a2;--acc2:#5aa2ff;--warn:#ffb84d;--err:#ff6b6b}
-*{box-sizing:border-box}body{margin:0;font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:radial-gradient(1200px 600px at 20% -10%,#1b2a5e 0%,var(--bg) 55%);color:var(--txt);min-height:100vh}
-header{padding:22px 18px 8px;max-width:1080px;margin:auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:grid;place-items:center;font-weight:900;color:#06121f;font-size:22px}
-h1{font-size:20px;margin:0}small{color:var(--mut)}
-main{max-width:1080px;margin:auto;padding:14px 18px 60px;display:grid;gap:14px}
-.card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));border:1px solid var(--line);border-radius:16px;padding:16px}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-label{font-size:13px;color:var(--mut)}
-select,input[type=text],input[type=number]{background:#0d1430;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:14px}
-button{background:linear-gradient(135deg,var(--acc),#7df0c6);border:0;color:#06121f;font-weight:800;border-radius:11px;padding:10px 16px;cursor:pointer;font-size:14px}
-button.ghost{background:#0d1430;color:var(--txt);border:1px solid var(--line)}
-button:disabled{opacity:.5;cursor:not-allowed}
-#drop{border:2px dashed var(--line);border-radius:16px;padding:26px;text-align:center;color:var(--mut);transition:.2s;background:rgba(90,162,255,.05)}
-#drop.over{border-color:var(--acc);color:var(--txt);background:rgba(56,225,162,.08)}
-#files{margin:10px 0 0;padding:0;list-style:none;display:grid;gap:8px}
-#files li{background:#0d1430;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;display:flex;justify-content:space-between;gap:8px}
-.tabs{display:flex;gap:8px;flex-wrap:wrap}
-.tab{padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:#0d1430;color:var(--mut);cursor:pointer;font-size:13px}
-.tab.active{background:var(--txt);color:#0b1020;font-weight:800}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:800px){.grid2{grid-template-columns:1fr}}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:10px}
-.stat{background:#0d1430;border:1px solid var(--line);border-radius:12px;padding:10px;font-size:12px;color:var(--mut)}
-.stat b{display:block;font-size:17px;color:var(--txt);margin-top:4px;word-break:break-all}
-#barWrap{background:#0d1430;border:1px solid var(--line);border-radius:999px;height:14px;overflow:hidden;margin-top:10px}
-#bar{height:100%;width:0%;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .15s}
-#log{background:#050816;border:1px solid var(--line);border-radius:12px;padding:12px;font-family:Consolas,monospace;font-size:12.5px;max-height:300px;overflow:auto;white-space:pre-wrap}
-.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;border:1px solid var(--line)}
-.ok{color:var(--acc)}.bad{color:var(--err)}a{color:var(--acc)}
-footer{max-width:1080px;margin:auto;padding:0 18px 40px;color:var(--mut);font-size:12.5px}
-code{background:#0d1430;padding:2px 6px;border-radius:6px;border:1px solid var(--line)}
-ol.howto{margin:8px 0 0;padding-left:20px;color:var(--mut);font-size:13.5px;line-height:1.9}
+:root{
+  --bg:#eef1f5; --card:#ffffff; --line:#dde3ec; --line-soft:#e9edf3;
+  --txt:#16202e; --mut:#5b6b82; --faint:#8a97ab;
+  --acc:#0f766e; --acc-dark:#0b5f59; --acc-soft:#e6f4f2;
+  --warn:#b45309; --warn-soft:#fef3e2; --err:#b91c1c; --err-soft:#fdecec;
+  --ok-soft:#e9f7f1; --radius:12px; --shadow:0 1px 2px rgba(16,32,46,.06),0 4px 14px rgba(16,32,46,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:15px;line-height:1.55;min-height:100vh}
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:1120px;margin:auto;padding:12px 20px;display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:11px}
+.mark{width:38px;height:38px;border-radius:9px;background:var(--acc);color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px;letter-spacing:.5px}
+.brand h1{font-size:17px;margin:0;font-weight:700}
+.brand small{display:block;color:var(--mut);font-size:12px;font-weight:400}
+.topbar-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:999px;font-size:12.5px;border:1px solid var(--line);background:#f7f9fb;color:var(--mut)}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:var(--faint)}
+.pill.ok{background:var(--ok-soft);border-color:#bfe6d6;color:var(--acc-dark)}
+.pill.ok .dot{background:var(--acc)}
+/* ---------- layout ---------- */
+.wrap{max-width:1120px;margin:auto;padding:22px 20px 70px;display:grid;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px}
+.step{display:flex;gap:16px}
+.step-num{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--acc-soft);color:var(--acc-dark);font-weight:700;font-size:13.5px;display:grid;place-items:center;margin-top:1px}
+.step-body{flex:1;min-width:0}
+.step-body>h2{font-size:15.5px;margin:0 0 4px;font-weight:700}
+.step-sub{font-size:13px;color:var(--mut);margin:0 0 14px}
+/* ---------- task picker ---------- */
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(max-width:700px){.seg{grid-template-columns:repeat(2,1fr)}}
+.tab{border:1px solid var(--line);background:#f7f9fb;border-radius:10px;padding:11px 10px;cursor:pointer;text-align:left;transition:border-color .15s,background .15s}
+.tab b{display:block;font-size:13.5px;font-weight:650}
+.tab span{font-size:12px;color:var(--mut)}
+.tab:hover{border-color:#b9c4d4}
+.tab.active{border:1.5px solid var(--acc);background:var(--acc-soft);padding:10.5px 9.5px}
+.tab.active b{color:var(--acc-dark)}
+/* ---------- files ---------- */
+#drop{border:1.5px dashed #c3ccd9;border-radius:10px;padding:30px 18px;text-align:center;color:var(--mut);background:#f7f9fb;transition:.15s;font-size:14px}
+#drop.over{border-color:var(--acc);background:var(--acc-soft);color:var(--acc-dark)}
+#files{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:8px}
+#files li{background:#f7f9fb;border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:13.5px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+#files li button{border:0;background:none;color:var(--faint);cursor:pointer;font-size:15px;padding:2px 6px}
+#files li button:hover{color:var(--err)}
+/* ---------- settings ---------- */
+.setgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px}
+fieldset.set{border:1px solid var(--line);border-radius:10px;padding:12px 14px 14px;margin:0;min-width:0}
+fieldset.set legend{font-size:12.5px;font-weight:700;color:var(--acc-dark);padding:0 6px}
+label.f{display:block;font-size:12.5px;color:var(--mut);margin-bottom:2px}
+label.f+.ctl{margin-bottom:10px}
+label.f:last-child{margin-bottom:0}
+.ctl{margin-bottom:10px}
+.ctl:last-child{margin-bottom:0}
+select,input[type=text],input[type=number]{width:100%;background:#fff;color:var(--txt);border:1px solid #c9d2df;border-radius:8px;padding:8px 10px;font-size:13.5px;font-family:inherit}
+select:focus,input:focus{outline:2px solid var(--acc);outline-offset:-1px;border-color:var(--acc)}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;color:var(--txt);cursor:pointer}
+.chk input{margin-top:3px;accent-color:var(--acc)}
+.chk small{display:block;color:var(--mut);font-size:12px}
+#benchOpts{border-top:1px dashed var(--line);margin-top:4px;padding-top:12px}
+/* ---------- run bar ---------- */
+.runbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+button{border:0;border-radius:9px;padding:10px 20px;cursor:pointer;font-size:14px;font-weight:650;font-family:inherit}
+#go{background:var(--acc);color:#fff}
+#go:hover{background:var(--acc-dark)}
+button.ghost{background:#fff;color:var(--txt);border:1px solid #c9d2df}
+button.ghost:hover{border-color:#9aa7ba;background:#f7f9fb}
+button:disabled{opacity:.45;cursor:not-allowed}
+#status{font-size:13px;color:var(--mut)}
+#status.err{color:var(--err)}
+#barWrap{background:#e7ebf1;border-radius:999px;height:10px;overflow:hidden;margin-top:12px}
+#bar{height:100%;width:0%;background:var(--acc);transition:width .15s;border-radius:999px}
+/* ---------- results ---------- */
+.grid2{display:grid;grid-template-columns:1.15fr 1fr;gap:16px}
+@media(max-width:860px){.grid2{grid-template-columns:1fr}}
+.panel-h{font-size:14px;font-weight:700;margin:0 0 10px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.stat{background:#f7f9fb;border:1px solid var(--line-soft);border-radius:9px;padding:9px 11px;font-size:11.5px;color:var(--mut)}
+.stat b{display:block;font-size:16px;color:var(--txt);margin-top:3px;font-weight:700;word-break:break-all}
+#log{background:#10212b;color:#d7e6ea;border-radius:9px;padding:13px 14px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12.5px;max-height:320px;overflow:auto;white-space:pre-wrap;line-height:1.6}
+/* ---------- misc ---------- */
+details.help{border:1px solid var(--line);border-radius:10px;background:#fff;padding:0}
+details.help summary{cursor:pointer;padding:13px 18px;font-size:13.5px;font-weight:650;list-style:none}
+details.help summary::-webkit-details-marker{display:none}
+details.help summary::before{content:"+ ";color:var(--acc);font-weight:800}
+details.help[open] summary::before{content:"– "}
+details.help .help-body{padding:0 18px 16px;font-size:13.5px;color:var(--mut)}
+ol.howto{margin:8px 0 0;padding-left:20px;line-height:1.9}
 ol.howto b{color:var(--txt)}
-table.api{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:8px}
-table.api td,table.api th{border:1px solid var(--line);padding:6px 8px;text-align:left}
-table.api th{color:var(--txt);background:#0d1430}
-.chk{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--mut)}
+code{background:#eef1f5;padding:2px 7px;border-radius:6px;font-size:12.5px;color:#334155}
+table.api{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+table.api td,table.api th{border:1px solid var(--line);padding:7px 10px;text-align:left}
+table.api th{background:#f3f6f9;font-weight:650}
+footer{max-width:1120px;margin:auto;padding:0 20px 44px;color:var(--mut);font-size:12.5px}
+a{color:var(--acc-dark)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 </style>
 </head>
 <body>
-<header>
-<div class="logo">TQ</div>
-<div>
-<h1>TurboQuant — Free Control Console <small>v2.4</small></h1>
-<small>Lossless by default (bit-identical + sha256) • 800KB lossy images only on demand • Same UI locally and on <b>Vercel</b></small>
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="mark">TQ</div>
+      <div><h1>TurboQuant Console <small style="font-weight:400">v2.4 · Lossless compression, verified by sha256</small></h1></div>
+    </div>
+    <div class="topbar-actions">
+      <span id="health" class="pill"><span class="dot"></span>Checking connection…</span>
+      <a href="https://vercel.com/new" target="_blank" rel="noopener"><button class="ghost" type="button">Deploy to Vercel</button></a>
+    </div>
+  </div>
 </div>
-<div style="margin-left:auto" class="row">
-<span id="health" class="pill">Checking connection…</span>
-<a href="https://vercel.com/new" target="_blank" rel="noopener"><button class="ghost">Deploy to Vercel ▲</button></a>
-</div>
-</header>
-<main>
-<div class="card">
-<b>📖 How to use (30 seconds)</b>
-<ol class="howto">
-<li><b>Pick a task</b> below: <b>Auto</b> (recommended) for anything, <b>Lossless</b> for max safety, <b>Image 800KB</b> for tiny photos, <b>Decompress</b> for <code>.tqz</code> files.</li>
-<li><b>Choose your options freely</b>: compression <b>mode</b> (fast → ultra), <b>advanced</b> transforms for extra ratio, image <b>target size</b> + <b>format</b>, response as <b>binary download</b> or <b>JSON+base64</b>.</li>
-<li><b>Drop files</b> into the box (or Browse). On Vercel one request ≈ 4.5MB max — for bigger files run locally: <code>python -m turboquant serve</code>.</li>
-<li>Press <b>▶ Run</b>, watch the <b>progress bar</b>, read the <b>stats</b> (original → new, codec, verified), then <b>⬇ Download</b>.</li>
-<li>Trust but verify: use <b>Analyze + Certificate</b> to see entropy, suggested pipeline and PASS/FAIL, or <b>Benchmark</b> to compare modes on your file.</li>
-</ol>
-</div>
-<div class="card">
-<div class="tabs" id="tabs">
-<div class="tab active" data-m="auto">🤖 Smart auto</div>
-<div class="tab" data-m="lossless">📦 Lossless compress</div>
-<div class="tab" data-m="image">🖼️ Image 800KB</div>
-<div class="tab" data-m="decompress">📂 Decompress</div>
-<div class="tab" data-m="analyze">🔍 Analyze + certificate</div>
-<div class="tab" data-m="bench">📊 Benchmark</div>
-</div>
-<div style="height:12px"></div>
-<div class="row">
-<label>Mode — your free choice <select id="mode">
-<option value="fast">fast — fastest</option>
-<option value="balanced" selected>balanced — recommended</option>
-<option value="max">max — strongest balanced</option>
-<option value="ultra">ultra — max compression</option>
-<option value="extreme">extreme — aggressive</option>
-</select></label>
-<label class="chk"><input type="checkbox" id="adv"> advanced (bwt / delta / filters / zdict)</label>
-<label>Image target <select id="target">
-<option value="409600">400KB</option>
-<option value="819200" selected>800KB</option>
-<option value="2097152">2MB</option>
-<option value="5242880">5MB</option>
-<option value="custom">custom…</option>
-</select></label>
-<label id="customWrap" style="display:none">Custom KB <input type="number" id="customKB" value="800" min="50" max="50000" style="width:90px"></label>
-<label>Image format <select id="fmt"><option value="auto" selected>auto (WEBP)</option><option>WEBP</option><option>JPEG</option><option>PNG</option><option>AVIF</option></select></label>
-<label>Response <select id="resp"><option value="bin" selected>binary download</option><option value="json">JSON + base64</option></select></label>
-</div>
-<div class="row" id="benchOpts" style="display:none;margin-top:8px">
-<span style="font-size:13px;color:var(--mut)">Benchmark modes (choose freely):</span>
-<label class="chk"><input type="checkbox" class="bm" value="fast" checked> fast</label>
-<label class="chk"><input type="checkbox" class="bm" value="balanced" checked> balanced</label>
-<label class="chk"><input type="checkbox" class="bm" value="max" checked> max</label>
-<label class="chk"><input type="checkbox" class="bm" value="ultra" checked> ultra</label>
-</div>
-<div id="drop" style="margin-top:12px">Drag &amp; drop files here or <button class="ghost" id="pick" type="button">Browse files</button><br><small>Vercel single-request limit ≈ 4.5MB — for large files run locally: <code>python -m turboquant serve</code></small>
-<input type="file" id="file" multiple hidden>
-</div>
-<ul id="files"></ul>
-<div class="row" style="margin-top:12px">
-<button id="go">▶ Run</button>
-<button class="ghost" id="dl" disabled>⬇ Download result</button>
-<button class="ghost" id="clear">Clear</button>
-<span id="status" style="font-size:13px;color:var(--mut)"></span>
-</div>
-<div id="barWrap"><div id="bar"></div></div>
-<div class="stats" id="stats"></div>
-</div>
-<div class="grid2">
-<div class="card"><b>📜 Log</b><div id="log" style="margin-top:8px">Ready.
+
+<div class="wrap">
+
+  <section class="card step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h2>Choose a task</h2>
+      <p class="step-sub">Each task uses the same engine — only the goal changes.</p>
+      <div class="seg" id="tabs">
+        <div class="tab active" data-m="auto" role="button" tabindex="0"><b>Smart auto</b><span>Detect the best pipeline for any file</span></div>
+        <div class="tab" data-m="lossless" role="button" tabindex="0"><b>Lossless compress</b><span>Maximum safety, bit-identical output</span></div>
+        <div class="tab" data-m="image" role="button" tabindex="0"><b>Image to target size</b><span>Photos down to 800KB and beyond</span></div>
+        <div class="tab" data-m="decompress" role="button" tabindex="0"><b>Decompress</b><span>Restore .tqz files, verified</span></div>
+        <div class="tab" data-m="analyze" role="button" tabindex="0"><b>Analyze + certificate</b><span>Entropy, suggestion, PASS/FAIL</span></div>
+        <div class="tab" data-m="bench" role="button" tabindex="0"><b>Benchmark</b><span>Compare modes on your file</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h2>Add files</h2>
+      <p class="step-sub">Vercel single-request limit ≈ 4.5MB — for large files run locally: <code>python -m turboquant serve</code></p>
+      <div id="drop">Drag &amp; drop files here or <button class="ghost" id="pick" type="button">Browse files</button>
+        <input type="file" id="file" multiple hidden>
+      </div>
+      <ul id="files"></ul>
+    </div>
+  </section>
+
+  <section class="card step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h2>Settings — full control</h2>
+      <p class="step-sub">Every option is yours to change. Choices are remembered on this device.</p>
+      <div class="setgrid">
+        <fieldset class="set">
+          <legend>Compression</legend>
+          <label class="f" for="mode">Mode</label>
+          <div class="ctl"><select id="mode">
+            <option value="fast">fast — fastest</option>
+            <option value="balanced" selected>balanced — recommended</option>
+            <option value="max">max — strongest balanced</option>
+            <option value="ultra">ultra — max compression</option>
+            <option value="extreme">extreme — aggressive</option>
+          </select></div>
+          <label class="chk"><input type="checkbox" id="adv"><span>Advanced transforms<small>bwt / delta / filters / zdict — extra ratio</small></span></label>
+        </fieldset>
+        <fieldset class="set">
+          <legend>Images</legend>
+          <label class="f" for="target">Target size</label>
+          <div class="ctl"><select id="target">
+            <option value="409600">400 KB</option>
+            <option value="819200" selected>800 KB</option>
+            <option value="2097152">2 MB</option>
+            <option value="5242880">5 MB</option>
+            <option value="custom">Custom…</option>
+          </select></div>
+          <div class="ctl" id="customWrap" style="display:none">
+            <label class="f" for="customKB">Custom size (KB)</label>
+            <input type="number" id="customKB" value="800" min="50" max="50000">
+          </div>
+          <label class="f" for="fmt">Output format</label>
+          <div class="ctl"><select id="fmt"><option value="auto" selected>Auto (WebP)</option><option>WEBP</option><option>JPEG</option><option>PNG</option><option>AVIF</option></select></div>
+        </fieldset>
+        <fieldset class="set">
+          <legend>Output</legend>
+          <label class="f" for="resp">Response type</label>
+          <div class="ctl"><select id="resp"><option value="bin" selected>Binary download</option><option value="json">JSON + base64</option></select></div>
+          <div id="benchOpts" style="display:none">
+            <label class="f">Benchmark modes</label>
+            <label class="chk"><input type="checkbox" class="bm" value="fast" checked><span>fast</span></label>
+            <label class="chk"><input type="checkbox" class="bm" value="balanced" checked><span>balanced</span></label>
+            <label class="chk"><input type="checkbox" class="bm" value="max" checked><span>max</span></label>
+            <label class="chk"><input type="checkbox" class="bm" value="ultra" checked><span>ultra</span></label>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </section>
+
+  <section class="card step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h2>Run &amp; results</h2>
+      <p class="step-sub">Progress, statistics and log appear here.</p>
+      <div class="runbar">
+        <button id="go">Run</button>
+        <button class="ghost" id="dl" disabled>Download result</button>
+        <button class="ghost" id="clear">Clear</button>
+        <span id="status"></span>
+      </div>
+      <div id="barWrap"><div id="bar"></div></div>
+      <div class="stats" id="stats" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <div class="grid2">
+    <div class="card"><p class="panel-h">Log</p><div id="log">Ready.
 </div></div>
-<div class="card"><b>⚡ Full power cheat-sheet</b>
-<div style="font-size:13.5px;color:var(--mut);line-height:1.9;margin-top:8px">
-• <b>Any file</b> → Auto / Lossless + <code>max</code> + <code>advanced</code> for best ratio.<br>
-• <b>Huge photo → 800KB</b> → Image tab + pick target + format.<br>
-• <b>.tqz file</b> → Decompress tab (sha256 verified automatically).<br>
-• <b>Before compressing</b> → Analyze shows entropy + suggested transform.<br>
-• <b>After compressing</b> → Certificate PASS/FAIL + Benchmark compares modes.<br>
+    <div class="card"><p class="panel-h">REST API — any language</p>
+      <table class="api">
+        <tr><th>Endpoint</th><th>What it does</th></tr>
+        <tr><td><code>POST /api/compress?mode=max</code></td><td>compress → .tqz</td></tr>
+        <tr><td><code>POST /api/decompress</code></td><td>decompress → original</td></tr>
+        <tr><td><code>POST /api/image?target_bytes=819200</code></td><td>photo → 800KB</td></tr>
+        <tr><td><code>POST /api/analyze</code></td><td>entropy + suggestion</td></tr>
+        <tr><td><code>POST /api/cert</code></td><td>certificate</td></tr>
+        <tr><td><code>POST /api/bench</code></td><td>compare modes</td></tr>
+        <tr><td><code>GET /api/health</code></td><td>liveness + codecs</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <details class="help">
+    <summary>How to use (30 seconds)</summary>
+    <div class="help-body">
+      <ol class="howto">
+        <li><b>Pick a task</b> above: <b>Smart auto</b> for anything, <b>Lossless</b> for max safety, <b>Image</b> for tiny photos, <b>Decompress</b> for <code>.tqz</code> files.</li>
+        <li><b>Adjust settings freely</b>: compression <b>mode</b>, <b>advanced</b> transforms, image <b>target size</b> + <b>format</b>, response as <b>binary</b> or <b>JSON+base64</b>.</li>
+        <li><b>Drop files</b> into the box (or Browse), press <b>Run</b>, watch the <b>progress bar</b>, read the <b>stats</b>, then <b>Download</b>.</li>
+        <li>Trust but verify: <b>Analyze + certificate</b> shows entropy and PASS/FAIL, <b>Benchmark</b> compares modes on your file.</li>
+      </ol>
+    </div>
+  </details>
+
 </div>
-<table class="api">
-<tr><th>REST (any language)</th><th>What it does</th></tr>
-<tr><td><code>POST /api/compress?mode=max</code></td><td>compress → .tqz</td></tr>
-<tr><td><code>POST /api/decompress</code></td><td>decompress → original</td></tr>
-<tr><td><code>POST /api/image?target_bytes=819200</code></td><td>photo → 800KB</td></tr>
-<tr><td><code>POST /api/analyze</code></td><td>entropy + suggestion</td></tr>
-<tr><td><code>POST /api/cert</code></td><td>certificate</td></tr>
-<tr><td><code>POST /api/bench</code></td><td>compare modes</td></tr>
-<tr><td><code>GET /api/health</code></td><td>liveness + codecs</td></tr>
-</table>
-</div>
-</div>
-</main>
+
 <footer>Deploy on Vercel: upload this folder as-is → <code>vercel --prod</code>. UI lives in <code>/public/index.html</code>, API in <code>/api/*.py</code>. Locally: <code>python -m turboquant serve --port 8765</code> then open <code>http://localhost:8765/</code>.</footer>
 <script>
 const $=id=>document.getElementById(id);
@@ -149,17 +253,23 @@ let files=[], lastBlob=null, lastName="out.bin";
 const log=m=>{const e=$("log");e.textContent+=m+"\n";e.scrollTop=e.scrollHeight};
 const fmt=n=>n==null?"—":n>=1048576?(n/1048576).toFixed(2)+" MB":n>=1024?(n/1024).toFixed(1)+" KB":n+" B";
 function setBar(p){$("bar").style.width=(p*100).toFixed(1)+"%"}
-function renderFiles(){const ul=$("files");ul.innerHTML="";files.forEach((f,i)=>{const li=document.createElement("li");li.innerHTML=`<span>${f.name} — ${fmt(f.size)}</span><button class="ghost" data-i="${i}">✕</button>`;ul.appendChild(li)});ul.querySelectorAll("button").forEach(b=>b.onclick=()=>{files.splice(+b.dataset.i,1);renderFiles()})}
+function renderFiles(){const ul=$("files");ul.innerHTML="";files.forEach((f,i)=>{const li=document.createElement("li");const sp=document.createElement("span");sp.textContent=`${f.name} — ${fmt(f.size)}`;const b=document.createElement("button");b.type="button";b.setAttribute("data-i",i);b.textContent="✕";b.setAttribute("aria-label","Remove "+f.name);li.appendChild(sp);li.appendChild(b);ul.appendChild(li)});ul.querySelectorAll("button").forEach(b=>b.onclick=()=>{files.splice(+b.dataset.i,1);renderFiles()})}
 $("pick").onclick=()=>$("file").click();
 $("file").onchange=e=>{files.push(...e.target.files);renderFiles();$("status").textContent=files.length+" file(s)";};
-const drop=$("drop");["dragover","dragenter"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over")}));["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over")}));drop.addEventListener("drop",e=>{files.push(...e.dataTransfer.files);renderFiles()});
-$("clear").onclick=()=>{files=[];renderFiles();$("stats").innerHTML="";$("dl").disabled=true;setBar(0);$("status").textContent=""};
-$("target").onchange=()=>{$("customWrap").style.display=$("target").value==="custom"?"inline":"none"};
+const drop=$("drop");["dragover","dragenter"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over")}));["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over")}));drop.addEventListener("drop",e=>{files.push(...e.dataTransfer.files);renderFiles();$("status").textContent=files.length+" file(s)"});
+$("clear").onclick=()=>{files=[];renderFiles();$("stats").innerHTML="";$("dl").disabled=true;setBar(0);$("status").textContent="";$("status").classList.remove("err")};
+$("target").onchange=()=>{$("customWrap").style.display=$("target").value==="custom"?"block":"none";savePrefs()};
 let curTab="auto";
-document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));t.classList.add("active");curTab=t.dataset.m;$("benchOpts").style.display=curTab==="bench"?"flex":"none"});
+function selectTab(el){document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));el.classList.add("active");curTab=el.dataset.m;$("benchOpts").style.display=curTab==="bench"?"block":"none";savePrefs()}
+document.querySelectorAll(".tab").forEach(t=>{t.onclick=()=>selectTab(t);t.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();selectTab(t)}}});
 function targetBytes(){if($("target").value==="custom"){const kb=Math.max(50,Math.min(50000,+($("customKB").value||800)));return kb*1024}return +$("target").value}
-async function health(){try{const r=await fetch("api/health");const j=await r.json();$("health").textContent="● "+(j.ok?"connected — "+(j.codecs||[]).join("/"):"API");$("health").className="pill ok"}catch{try{const r=await fetch("/health");if(r.ok){$("health").textContent="● local (legacy)";$("health").className="pill ok";return}}catch{}$("health").textContent="○ offline";$("health").className="pill"}}
-health();setInterval(health,15000);
+/* remembered preferences (this device only) */
+function savePrefs(){try{localStorage.setItem("tq-prefs",JSON.stringify({tab:curTab,mode:$("mode").value,adv:$("adv").checked,target:$("target").value,customKB:$("customKB").value,fmt:$("fmt").value,resp:$("resp").value,bm:[...document.querySelectorAll(".bm:checked")].map(x=>x.value)}))}catch{}}
+function loadPrefs(){try{const p=JSON.parse(localStorage.getItem("tq-prefs")||"null");if(!p)return;if(p.mode)$("mode").value=p.mode;$("adv").checked=!!p.adv;if(p.target)$("target").value=p.target;if(p.customKB)$("customKB").value=p.customKB;if(p.fmt)$("fmt").value=p.fmt;if(p.resp)$("resp").value=p.resp;document.querySelectorAll(".bm").forEach(x=>x.checked=(p.bm||[]).includes(x.value));const t=document.querySelector(`.tab[data-m="${p.tab}"]`);if(t)selectTab(t);$("customWrap").style.display=$("target").value==="custom"?"block":"none"}catch{}}
+["mode","adv","fmt","resp","customKB"].forEach(id=>$(id).addEventListener("change",savePrefs));
+document.querySelectorAll(".bm").forEach(x=>x.addEventListener("change",savePrefs));
+async function health(){try{const r=await fetch("api/health");const j=await r.json();const el=$("health");el.innerHTML="";const d=document.createElement("span");d.className="dot";el.appendChild(d);el.appendChild(document.createTextNode(j.ok?"connected — "+(j.codecs||[]).join("/"):"API"));el.className="pill"+(j.ok?" ok":"")}catch{try{const r=await fetch("/health");const el=$("health");if(r.ok){el.innerHTML="";const d=document.createElement("span");d.className="dot";el.appendChild(d);el.appendChild(document.createTextNode("local (legacy)"));el.className="pill ok";return}}catch{}const el=$("health");el.innerHTML="";const d=document.createElement("span");d.className="dot";el.appendChild(d);el.appendChild(document.createTextNode("offline"));el.className="pill"}}
+health();setInterval(health,15000);loadPrefs();
 function xhrPost(url, file){
 return new Promise((res,rej)=>{
 const x=new XMLHttpRequest();x.open("POST",url);x.responseType="arraybuffer";
@@ -174,39 +284,40 @@ else res({buf:x.response,headers:x.getAllResponseHeaders()});
 };
 x.onerror=()=>rej(new Error("Connection failed"));x.send(file);
 })}
-function showStats(o){const s=$("stats");const rows=[["Original",fmt(o.orig)],["New",fmt(o.new)],["Ratio",o.ratio??"—"],["Saved",o.saved_pct!=null?o.saved_pct+"%":"—"],["Codec",o.codec||"—"],["Pipeline",o.pipeline||o.method||"—"],["Verified",o.verified===true?"✅":o.verdict||"—"],["Time",o.elapsed_s!=null?o.elapsed_s+"s":"—"]];s.innerHTML=rows.map(([k,v])=>`<div class="stat">${k}<b>${v}</b></div>`).join("")}
+function showStats(o){const s=$("stats");const rows=[["Original",fmt(o.orig)],["New",fmt(o.new)],["Ratio",o.ratio??"—"],["Saved",o.saved_pct!=null?o.saved_pct+"%":"—"],["Codec",o.codec||"—"],["Pipeline",o.pipeline||o.method||"—"],["Verified",o.verified===true?"Pass":o.verdict||"—"],["Time",o.elapsed_s!=null?o.elapsed_s+"s":"—"]];s.innerHTML="";rows.forEach(([k,v])=>{const d=document.createElement("div");d.className="stat";const sp=document.createElement("span");sp.textContent=k;const b=document.createElement("b");b.textContent=v;d.appendChild(sp);d.appendChild(b);s.appendChild(d)})}
 $("go").onclick=async()=>{
-if(!files.length){alert("Choose a file first");return}
+if(!files.length){$("status").textContent="Choose a file first";$("status").classList.add("err");return}
+$("status").classList.remove("err");
 const f=files[0], mode=$("mode").value, adv=$("adv").checked?"1":"0", resp=$("resp").value;
 $("dl").disabled=true;lastBlob=null;setBar(0.02);$("status").textContent="Uploading & processing…";
 try{
 if(curTab==="analyze"){
 const r=await fetch(`api/analyze`,{method:"POST",body:f});const j=await r.json();if(!r.ok)throw new Error(j.error||r.status);
-log(`🔍 ${f.name}: kind=${j.kind} entropy=${j.entropy} verdict=${j.verdict}\nSuggestion: ${JSON.stringify(j.suggestion)}`);showStats({orig:f.size,codec:j.kind});$("status").textContent="Analyzed";
+log(`${f.name}: kind=${j.kind} entropy=${j.entropy} verdict=${j.verdict}\nSuggestion: ${JSON.stringify(j.suggestion)}`);showStats({orig:f.size,codec:j.kind});$("status").textContent="Analyzed";
 }else if(curTab==="bench"){
 const modes=[...document.querySelectorAll(".bm:checked")].map(x=>x.value).join(",")||"fast,balanced,max,ultra";
 const r=await fetch(`api/bench?modes=${modes}&advanced=${adv}`,{method:"POST",body:f});const j=await r.json();if(!r.ok)throw new Error(j.error||r.status);
-log("📊 benchmark:\n"+j.rows.map(x=>`${x.mode} ${x.codec} ${x.new} (${x.saved_pct}%) ${x.compress_s}s verified=${x.verified}`).join("\n"));showStats({orig:f.size,new:j.rows[0]?.new,codec:"bench"});$("status").textContent="Benchmark done";
+log("benchmark:\n"+j.rows.map(x=>`${x.mode} ${x.codec} ${x.new} (${x.saved_pct}%) ${x.compress_s}s verified=${x.verified}`).join("\n"));showStats({orig:f.size,new:j.rows[0]?.new,codec:"bench"});$("status").textContent="Benchmark done";
 }else if(curTab==="decompress"){
 const out=await xhrPost(`api/decompress`,f);if(out.json){showStats(out.json)}
-else{lastBlob=new Blob([out.buf]);lastName=f.name.replace(/\.tqz$/i,"")+".out";$("dl").disabled=false;log(`📂 Decompressed: ${f.name} → ${lastName} (${fmt(lastBlob.size)})`);showStats({orig:f.size,new:lastBlob.size})}$("status").textContent="Decompressed";
+else{lastBlob=new Blob([out.buf]);lastName=f.name.replace(/\.tqz$/i,"")+".out";$("dl").disabled=false;log(`Decompressed: ${f.name} → ${lastName} (${fmt(lastBlob.size)})`);showStats({orig:f.size,new:lastBlob.size})}$("status").textContent="Decompressed";
 }else if(curTab==="image"){
 const tb=targetBytes(), fm=$("fmt").value;
 const out=await xhrPost(`api/image?target_bytes=${tb}&mode=${mode}&fmt=${fm}`,f);
 if(out.json&&out.json.error)throw new Error(out.json.error);
 if(out.json){showStats(out.json)}
-else{lastBlob=new Blob([out.buf],{type:"image/webp"});lastName=f.name.replace(/\.[^.]+$/,"")+".tq.webp";$("dl").disabled=false;showStats({orig:f.size,new:lastBlob.size});log(`🖼️ Image: ${f.name} ${fmt(f.size)} → ${fmt(lastBlob.size)}`)}
+else{lastBlob=new Blob([out.buf],{type:"image/webp"});lastName=f.name.replace(/\.[^.]+$/,"")+".tq.webp";$("dl").disabled=false;showStats({orig:f.size,new:lastBlob.size});log(`Image: ${f.name} ${fmt(f.size)} → ${fmt(lastBlob.size)}`)}
 $("status").textContent="Image compressed";
 }else{
 const endpoint="api/compress";
 const suffix=resp==="json"?"&format=json":"";
 const out=await xhrPost(`${endpoint}?mode=${mode}&advanced=${adv}&filename=${encodeURIComponent(f.name)}${suffix}`,f);
 if(out.json&&out.json.error)throw new Error(out.json.error);
-if(out.json&&out.json.output_b64){const bin=Uint8Array.from(atob(out.json.output_b64),c=>c.charCodeAt(0));lastBlob=new Blob([bin]);lastName=(out.json.filename||f.name)+".tqz";$("dl").disabled=false;showStats(out.json);log(`📦 ${f.name}: ${fmt(out.json.orig)} → ${fmt(out.json.new)} codec=${out.json.codec} verified=${out.json.verified}`)}
-else if(out.buf){lastBlob=new Blob([out.buf]);const disp=(out.headers.match(/filename="?([^"\n]+)"?/i)||[])[1]||f.name+".tqz";lastName=decodeURIComponent(disp);$("dl").disabled=false;log(`📦 Done: ${fmt(f.size)} → ${fmt(lastBlob.size)}`);showStats({orig:f.size,new:lastBlob.size})}
-$("status").textContent="Compressed ✅";
+if(out.json&&out.json.output_b64){const bin=Uint8Array.from(atob(out.json.output_b64),c=>c.charCodeAt(0));lastBlob=new Blob([bin]);lastName=(out.json.filename||f.name)+".tqz";$("dl").disabled=false;showStats(out.json);log(`${f.name}: ${fmt(out.json.orig)} → ${fmt(out.json.new)} codec=${out.json.codec} verified=${out.json.verified}`)}
+else if(out.buf){lastBlob=new Blob([out.buf]);const disp=(out.headers.match(/filename="?([^"\n]+)"?/i)||[])[1]||f.name+".tqz";lastName=decodeURIComponent(disp);$("dl").disabled=false;log(`Done: ${fmt(f.size)} → ${fmt(lastBlob.size)}`);showStats({orig:f.size,new:lastBlob.size})}
+$("status").textContent="Compressed";
 }
-}catch(e){$("status").textContent="❌ "+e.message;log("❌ "+e.message)}
+}catch(e){$("status").textContent=e.message;$("status").classList.add("err");log(e.message)}
 };
 $("dl").onclick=()=>{if(!lastBlob)return;const a=document.createElement("a");a.href=URL.createObjectURL(lastBlob);a.download=lastName;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000)};
 </script>
