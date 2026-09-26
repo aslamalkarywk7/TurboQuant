@@ -29,10 +29,10 @@ full = ["zstandard>=0.22", "brotli>=1.1", "pikepdf>=8", "soundfile>=0.12"]
 secure = ["cryptography>=41"]
 dev = ["pytest>=7", "build", "twine"]
 [project.urls]
-Homepage = "https://github.com/TurboQuant/turboquant"
-Documentation = "https://github.com/TurboQuant/turboquant#readme"
-Repository = "https://github.com/TurboQuant/turboquant"
-"Bug Tracker" = "https://github.com/TurboQuant/turboquant/issues"
+Homepage = "https://github.com/aslamalkarywk7/TurboQuant"
+Documentation = "https://github.com/aslamalkarywk7/TurboQuant#readme"
+Repository = "https://github.com/aslamalkarywk7/TurboQuant"
+"Bug Tracker" = "https://github.com/aslamalkarywk7/TurboQuant/issues"
 [project.scripts]
 turboquant = "turboquant.cli:main"
 turboquant-gui = "gui.app:main"

@@ -32,7 +32,7 @@ def _pixels_equal(a_path: str, raw_a: bytes | None, b_data: bytes) -> bool:
                     # قارن بعد توحيد RGB
                     im0 = im0.convert("RGB")
                     im1 = im1.convert("RGB")
-                return list(im0.getdata()) == list(im1.getdata())
+                return list(im0.get_flattened_data()) == list(im1.get_flattened_data())
         else:
             with Image.open(io.BytesIO(raw_a)) as im0, Image.open(io.BytesIO(b_data)) as im1:
                 im0.load()
@@ -40,7 +40,7 @@ def _pixels_equal(a_path: str, raw_a: bytes | None, b_data: bytes) -> bool:
                 if im0.size != im1.size or im0.mode != im1.mode:
                     im0 = im0.convert("RGB")
                     im1 = im1.convert("RGB")
-                return list(im0.getdata()) == list(im1.getdata())
+                return list(im0.get_flattened_data()) == list(im1.get_flattened_data())
     except Exception:
         return False
 

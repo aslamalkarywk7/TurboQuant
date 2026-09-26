@@ -80,7 +80,7 @@ def test_lossless_image_pixels_identical(tmp_path):
     tq.decompress_lossless(c, r)
     a = Image.open(p).convert("RGB")
     b = Image.open(r).convert("RGB")
-    assert list(a.getdata()) == list(b.getdata())
+    assert list(a.get_flattened_data()) == list(b.get_flattened_data())
 
 def test_lossless_office_zip_smaller_or_equal(tmp_path):
     z = tmp_path / "doc.docx"
