@@ -67,7 +67,7 @@ Canonical: `github.com/aslamalkarywk7/TurboQuant` (`pyproject.toml`). Legacy `pa
 `.[max]` (zstd/brotli, recommended), `.[full]` (+PDF/audio), `.[secure]` (crypto), base = `Pillow` only.
 
 **Python/Node?**
-Python `>=3.9` (CI `3.9–3.12`), Node `>=18` for bindings.
+Python `>=3.10` (CI `3.10–3.12`), Node `>=18` for bindings.
 
 **Version triple?**
 `__init__.__version__` = `pyproject.version` = `package.json.version` (enforced by `test_versions.py`).

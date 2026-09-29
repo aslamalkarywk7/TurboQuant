@@ -2,7 +2,7 @@
 
 ## Unreleased — hardening + community docs
 - أمان: `ThreadingHTTPServer` + ربط `0.0.0.0`، تعطيل `GET /detect?path=` (كان oracle)، سقف هيدر `10MB` في `lossless/crypto/dedup`، `decompress_bytes` بسقف، تعقيم أسماء الملفات، رسائل خطأ عامة + هيدرات `nosniff/DENY/no-referrer`، توحيد `TQ_MAX_MB=25`.
-- نشر: `Dockerfile` غير-root + `HEALTHCHECK` + `.dockerignore`، `release.yml` جديد، `ci.yml` يشمل `[secure]` + `3.9`، إصلاح `package.json` repo URL.
+- نشر: `Dockerfile` غير-root + `HEALTHCHECK` + `.dockerignore`، `release.yml` جديد، `ci.yml` يشمل `[secure]`، إسقاط `3.9` (الحد الأدنى `3.10` مثل Pillow 14/pytest 8)، إصلاح `package.json` repo URL.
 - مجتمع: `CONTRIBUTING` + `CODE_OF_CONDUCT` + `SECURITY` + `SUPPORT` + `CITATION.cff` + `THIRD-PARTY-NOTICES` + قوالب Issue/PR + `docs/` (`ARCHITECTURE/CONFIGURATION/FAQ/TROUBLESHOOTING/FEATURES/ROADMAP/GLOSSARY/PROJECT-CHECKLIST/README` hub).
 
 ## 2.4.0 (2026-09-14) — إصلاح العيوب + قاعدة بيانات chunks

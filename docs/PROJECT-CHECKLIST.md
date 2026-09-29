@@ -33,7 +33,7 @@ Copy this file to each repo and tick. TurboQuant already passes all.
 ## 4. Engineering
 - [ ] `CHANGELOG.md` (Keep a Changelog, Unreleased section)
 - [ ] Version triple enforced by test (`__init__` = `pyproject` = `package.json`)
-- [ ] CI matrix covers min supported version (`3.9`) + runs full extras (`[max,secure]`) + `-rs` to surface skips
+- [ ] CI matrix covers min supported version (`3.10`) + runs full extras (`[max,secure]`) + `-rs` to surface skips
 - [ ] `release.yml` (tag → build → publish, trusted publishing)
 - [ ] `Dockerfile` non-root (`USER app`) + `HEALTHCHECK` + `.dockerignore`
 - [ ] No `str(e)` to HTTP clients (generic + server log)

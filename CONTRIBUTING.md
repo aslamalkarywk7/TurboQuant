@@ -47,7 +47,7 @@ python -m turboquant cert out.tqz   # must be PASS
 - New API route: add case in `tests/test_web.py` + update [API](docs/API.md).
 - New binding: update matrix in [bindings README](bindings/README.md).
 
-CI runs `3.9–3.12` on Ubuntu with `.[max,secure]`. Skipped crypto tests are a bug — do not add module-level `skipif`, scope skips to single tests.
+CI runs `3.10–3.12` on Ubuntu with `.[max,secure]`. Skipped crypto tests are a bug — do not add module-level `skipif`, scope skips to single tests.
 
 ## 5. Pull requests
 
