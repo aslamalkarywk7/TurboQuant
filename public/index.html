@@ -128,7 +128,7 @@ a{color:var(--acc-dark)}
       <div class="seg" id="tabs">
         <div class="tab active" data-m="auto" role="button" tabindex="0"><b>Smart auto</b><span>Detect the best pipeline for any file</span></div>
         <div class="tab" data-m="lossless" role="button" tabindex="0"><b>Lossless compress</b><span>Maximum safety, bit-identical output</span></div>
-        <div class="tab" data-m="image" role="button" tabindex="0"><b>Image to target size</b><span>Photos down to 800KB and beyond</span></div>
+        <div class="tab" data-m="image" role="button" tabindex="0"><b>Image to target size</b><span>Photos only — other files use Lossless</span></div>
         <div class="tab" data-m="decompress" role="button" tabindex="0"><b>Decompress</b><span>Restore .tqz files, verified</span></div>
         <div class="tab" data-m="analyze" role="button" tabindex="0"><b>Analyze + certificate</b><span>Entropy, suggestion, PASS/FAIL</span></div>
         <div class="tab" data-m="bench" role="button" tabindex="0"><b>Benchmark</b><span>Compare modes on your file</span></div>
@@ -208,11 +208,13 @@ a{color:var(--acc-dark)}
       <div class="runbar">
         <button id="go">Run</button>
         <button class="ghost" id="dl" disabled>Download result</button>
+        <button class="ghost" id="dlAll" disabled>Download all</button>
         <button class="ghost" id="clear">Clear</button>
         <span id="status"></span>
       </div>
       <div id="barWrap"><div id="bar"></div></div>
       <div class="stats" id="stats" style="margin-top:12px"></div>
+      <div id="dls" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px"></div>
     </div>
   </section>
 
@@ -239,7 +241,7 @@ a{color:var(--acc-dark)}
       <ol class="howto">
         <li><b>Pick a task</b> above: <b>Smart auto</b> for anything, <b>Lossless</b> for max safety, <b>Image</b> for tiny photos, <b>Decompress</b> for <code>.tqz</code> files.</li>
         <li><b>Adjust settings freely</b>: compression <b>mode</b>, <b>advanced</b> transforms, image <b>target size</b> + <b>format</b>, response as <b>binary</b> or <b>JSON+base64</b>.</li>
-        <li><b>Drop files</b> into the box (or Browse), press <b>Run</b>, watch the <b>progress bar</b>, read the <b>stats</b>, then <b>Download</b>.</li>
+        <li><b>Drop files</b> into the box (one or many — all are processed in turn), press <b>Run</b>, watch the <b>progress bar</b>, read the <b>stats</b>, then <b>Download</b> each result or <b>Download all</b>.</li>
         <li>Trust but verify: <b>Analyze + certificate</b> shows entropy and PASS/FAIL, <b>Benchmark</b> compares modes on your file.</li>
       </ol>
     </div>
@@ -250,15 +252,17 @@ a{color:var(--acc-dark)}
 <footer>Deploy on Vercel: upload this folder as-is → <code>vercel --prod</code>. UI lives in <code>/public/index.html</code>, API in <code>/api/*.py</code>. Locally: <code>python -m turboquant serve --port 8765</code> then open <code>http://localhost:8765/</code>.</footer>
 <script>
 const $=id=>document.getElementById(id);
-let files=[], lastBlob=null, lastName="out.bin";
+let files=[], lastBlob=null, lastName="out.bin", results=[];
 const log=m=>{const e=$("log");e.textContent+=m+"\n";e.scrollTop=e.scrollHeight};
+function isImageFile(f){if(f.type&&f.type.startsWith("image/"))return true;return /\.(png|jpe?g|webp|gif|bmp|tiff?|avif|ico|svg)$/i.test(f.name||"")}
+function renderDownloads(){const box=$("dls");if(!box)return;box.innerHTML="";results.forEach((r,i)=>{const a=document.createElement("a");a.href=URL.createObjectURL(r.blob);a.download=r.name;a.textContent="⬇ "+r.name;a.className="ghost";a.style.cssText="border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:12.5px;text-decoration:none;color:inherit";a.onclick=()=>setTimeout(()=>URL.revokeObjectURL(a.href),5000);box.appendChild(a)});const all=$("dlAll");if(all)all.disabled=!results.length}
 const fmt=n=>n==null?"—":n>=1048576?(n/1048576).toFixed(2)+" MB":n>=1024?(n/1024).toFixed(1)+" KB":n+" B";
 function setBar(p){$("bar").style.width=(p*100).toFixed(1)+"%"}
 function renderFiles(){const ul=$("files");ul.innerHTML="";files.forEach((f,i)=>{const li=document.createElement("li");const sp=document.createElement("span");sp.textContent=`${f.name} — ${fmt(f.size)}`;const b=document.createElement("button");b.type="button";b.setAttribute("data-i",i);b.textContent="✕";b.setAttribute("aria-label","Remove "+f.name);li.appendChild(sp);li.appendChild(b);ul.appendChild(li)});ul.querySelectorAll("button").forEach(b=>b.onclick=()=>{files.splice(+b.dataset.i,1);renderFiles()})}
 $("pick").onclick=()=>$("file").click();
 $("file").onchange=e=>{files.push(...e.target.files);renderFiles();$("status").textContent=files.length+" file(s)";};
 const drop=$("drop");["dragover","dragenter"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over")}));["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over")}));drop.addEventListener("drop",e=>{files.push(...e.dataTransfer.files);renderFiles();$("status").textContent=files.length+" file(s)"});
-$("clear").onclick=()=>{files=[];renderFiles();$("stats").innerHTML="";$("dl").disabled=true;setBar(0);$("status").textContent="";$("status").classList.remove("err")};
+$("clear").onclick=()=>{files=[];results=[];renderFiles();renderDownloads();$("stats").innerHTML="";$("dl").disabled=true;lastBlob=null;setBar(0);$("status").textContent="";$("status").classList.remove("err")};
 $("target").onchange=()=>{$("customWrap").style.display=$("target").value==="custom"?"block":"none";savePrefs()};
 let curTab="auto";
 function selectTab(el){document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));el.classList.add("active");curTab=el.dataset.m;$("benchOpts").style.display=curTab==="bench"?"block":"none";savePrefs()}
@@ -289,41 +293,56 @@ function showStats(o){const s=$("stats");const rows=[["Original",fmt(o.orig)],["
 $("go").onclick=async()=>{
 if(!files.length){$("status").textContent="Choose a file first";$("status").classList.add("err");return}
 $("status").classList.remove("err");
-const f=files[0], mode=$("mode").value, adv=$("adv").checked?"1":"0", resp=$("resp").value;
-$("dl").disabled=true;lastBlob=null;setBar(0.02);$("status").textContent="Uploading & processing…";
+const mode=$("mode").value, adv=$("adv").checked?"1":"0", resp=$("resp").value;
+$("dl").disabled=true;const dlAll=$("dlAll");if(dlAll)dlAll.disabled=true;
+lastBlob=null;results=[];renderDownloads();setBar(0.02);
+const total=files.length;let ok=0, fail=0;
+const queue=files.slice();
+for(let i=0;i<queue.length;i++){
+const f=queue[i];
+$("status").textContent=`Working on file ${i+1}/${total}: ${f.name}…`;
+setBar(total?i/total*0.9+0.02:0.02);
 try{
 if(curTab==="analyze"){
 const r=await fetch(`api/analyze`,{method:"POST",body:f});const j=await r.json();if(!r.ok)throw new Error(j.error||r.status);
-log(`${f.name}: kind=${j.kind} entropy=${j.entropy} verdict=${j.verdict}\nSuggestion: ${JSON.stringify(j.suggestion)}`);showStats({orig:f.size,codec:j.kind});$("status").textContent="Analyzed";
+log(`${f.name}: kind=${j.kind} entropy=${j.entropy} verdict=${j.verdict}\nSuggestion: ${JSON.stringify(j.suggestion)}`);if(i===0)showStats({orig:f.size,codec:j.kind});ok++;
 }else if(curTab==="bench"){
 const modes=[...document.querySelectorAll(".bm:checked")].map(x=>x.value).join(",")||"fast,balanced,max,ultra";
 const r=await fetch(`api/bench?modes=${modes}&advanced=${adv}`,{method:"POST",body:f});const j=await r.json();if(!r.ok)throw new Error(j.error||r.status);
-log("benchmark:\n"+j.rows.map(x=>`${x.mode} ${x.codec} ${x.new} (${x.saved_pct}%) ${x.compress_s}s verified=${x.verified}`).join("\n"));showStats({orig:f.size,new:j.rows[0]?.new,codec:"bench"});$("status").textContent="Benchmark done";
+log(`${f.name} benchmark:\n`+j.rows.map(x=>`${x.mode} ${x.codec} ${x.new} (${x.saved_pct}%) ${x.compress_s}s verified=${x.verified}`).join("\n"));if(i===0)showStats({orig:f.size,new:j.rows[0]?.new,codec:"bench"});ok++;
 }else if(curTab==="decompress"){
-const out=await xhrPost(`api/decompress`,f);if(out.json){showStats(out.json)}
-else{lastBlob=new Blob([out.buf]);lastName=f.name.replace(/\.tqz$/i,"")+".out";$("dl").disabled=false;log(`Decompressed: ${f.name} → ${lastName} (${fmt(lastBlob.size)})`);showStats({orig:f.size,new:lastBlob.size})}$("status").textContent="Decompressed";
+const out=await xhrPost(`api/decompress`,f);if(out.json){showStats(out.json);log(`${f.name}: ${JSON.stringify(out.json)}`)}
+else{const blob=new Blob([out.buf]);const name=f.name.replace(/\.tqz$/i,"")+".out";results.push({blob,name});if(!lastBlob){lastBlob=blob;lastName=name;$("dl").disabled=false}log(`Decompressed: ${f.name} → ${name} (${fmt(blob.size)})`);if(i===0)showStats({orig:f.size,new:blob.size})}ok++;
 }else if(curTab==="image"){
+if(!isImageFile(f)){fail++;log(`Skipped (not an image): ${f.name} — use Smart auto / Lossless for documents, audio, video and archives.`);continue}
 const tb=targetBytes(), fm=$("fmt").value;
 const out=await xhrPost(`api/image?target_bytes=${tb}&mode=${mode}&fmt=${fm}`,f);
 if(out.json&&out.json.error)throw new Error(out.json.error);
-if(out.json){showStats(out.json)}
-else{lastBlob=new Blob([out.buf],{type:"image/webp"});lastName=f.name.replace(/\.[^.]+$/,"")+".tq.webp";$("dl").disabled=false;
+if(out.json){if(i===0)showStats(out.json);log(`${f.name}: ${JSON.stringify(out.json)}`)}
+else{const blob=new Blob([out.buf],{type:"image/webp"});const name=f.name.replace(/\.[^.]+$/,"")+".tq.webp";results.push({blob,name});if(!lastBlob){lastBlob=blob;lastName=name;$("dl").disabled=false}
 const hit=((out.headers||"").match(/x-tq-hit:\s*(\d)/i)||[])[1]==="1";
-const verdict=lastBlob.size<=tb?(hit?"Target met":"Already under target — kept as is"):"Over target";
-showStats({orig:f.size,new:lastBlob.size,verdict});log(`Image: ${f.name} ${fmt(f.size)} → ${fmt(lastBlob.size)} (target ${fmt(tb)}): ${verdict}`)}
-$("status").textContent="Image compressed";
+const verdict=blob.size<=tb?(hit?"Target met":"Already under target — kept as is"):"Over target";
+if(i===0||total===1)showStats({orig:f.size,new:blob.size,verdict});log(`Image: ${f.name} ${fmt(f.size)} → ${fmt(blob.size)} (target ${fmt(tb)}): ${verdict}`)}
+ok++;
 }else{
 const endpoint="api/compress";
 const suffix=resp==="json"?"&format=json":"";
 const out=await xhrPost(`${endpoint}?mode=${mode}&advanced=${adv}&filename=${encodeURIComponent(f.name)}${suffix}`,f);
 if(out.json&&out.json.error)throw new Error(out.json.error);
-if(out.json&&out.json.output_b64){const bin=Uint8Array.from(atob(out.json.output_b64),c=>c.charCodeAt(0));lastBlob=new Blob([bin]);lastName=(out.json.filename||f.name)+".tqz";$("dl").disabled=false;showStats(out.json);log(`${f.name}: ${fmt(out.json.orig)} → ${fmt(out.json.new)} codec=${out.json.codec} verified=${out.json.verified}`)}
-else if(out.buf){lastBlob=new Blob([out.buf]);const disp=(out.headers.match(/filename="?([^"\n]+)"?/i)||[])[1]||f.name+".tqz";lastName=decodeURIComponent(disp);$("dl").disabled=false;log(`Done: ${fmt(f.size)} → ${fmt(lastBlob.size)}`);showStats({orig:f.size,new:lastBlob.size})}
-$("status").textContent="Compressed";
+if(out.json&&out.json.output_b64){const bin=Uint8Array.from(atob(out.json.output_b64),c=>c.charCodeAt(0));const blob=new Blob([bin]);const name=(out.json.filename||f.name)+".tqz";results.push({blob,name});if(!lastBlob){lastBlob=blob;lastName=name;$("dl").disabled=false}if(i===0)showStats(out.json);log(`${f.name}: ${fmt(out.json.orig)} → ${fmt(out.json.new)} codec=${out.json.codec} verified=${out.json.verified}`)}
+else if(out.buf){const blob=new Blob([out.buf]);const disp=(out.headers.match(/filename="?([^"\n]+)"?/i)||[])[1]||f.name+".tqz";const name=decodeURIComponent(disp);results.push({blob,name});if(!lastBlob){lastBlob=blob;lastName=name;$("dl").disabled=false}log(`Done: ${f.name} ${fmt(f.size)} → ${fmt(blob.size)}`);if(i===0)showStats({orig:f.size,new:blob.size})}
+ok++;
 }
-}catch(e){$("status").textContent=e.message;$("status").classList.add("err");log(e.message)}
+}catch(e){fail++;log(`FAILED ${f.name}: ${e.message}`)}
+renderDownloads();
+}
+setBar(1);renderDownloads();
+if(fail&&ok)$("status").textContent=`Done: ${ok} ok, ${fail} failed — see log`;
+else if(ok)$("status").textContent=total>1?`Done: all ${ok} files processed`:(curTab==="analyze"?"Analyzed":curTab==="bench"?"Benchmark done":curTab==="decompress"?"Decompressed":curTab==="image"?"Image compressed":"Compressed");
+else{$("status").textContent="Nothing processed — see log";$("status").classList.add("err")}
 };
 $("dl").onclick=()=>{if(!lastBlob)return;const a=document.createElement("a");a.href=URL.createObjectURL(lastBlob);a.download=lastName;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000)};
+const _dlAll=$("dlAll");if(_dlAll)_dlAll.onclick=()=>{if(!results.length)return;results.forEach((r,i)=>{setTimeout(()=>{const a=document.createElement("a");a.href=URL.createObjectURL(r.blob);a.download=r.name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000)},i*400)})};
 </script>
 </body>
 </html>
