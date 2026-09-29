@@ -15,6 +15,13 @@ htmlcov/
 Thumbs.db
 .vscode/
 *.swp
+# Secrets — never commit
+.env
+.env.*
+*.pem
+*.key
+*.p12
 # Local turbiquant server / bench leftovers (keep repo clean)
 *.tmp.mp4
 *.tar.tmp
+*.tmp

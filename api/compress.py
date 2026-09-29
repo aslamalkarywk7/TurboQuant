@@ -7,13 +7,13 @@ from urllib.parse import urlparse, parse_qs
 import base64, os, sys, tempfile, time
 sys.path.insert(0, os.path.dirname(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from _tq import cors, send_json, send_bytes, read_body, ensure_turboquant
+from _tq import cors, send_json, send_bytes, read_body, ensure_turboquant, sanitize_filename, _security
 
 class handler(BaseHTTPRequestHandler):
     def log_message(self, *a):
         pass
     def do_OPTIONS(self):
-        self.send_response(200); cors(self); self.end_headers()
+        self.send_response(200); cors(self); _security(self); self.end_headers()
     def do_POST(self):
         ensure_turboquant()
         u = urlparse(self.path)
@@ -40,13 +40,13 @@ class handler(BaseHTTPRequestHandler):
                 f.write(body)
             try:
                 info = tq.compress_lossless(inp, out, mode=mode, advanced=advanced)
-            except Exception as e:
-                send_json(self, {"ok": False, "error": str(e)[:500]}, 500)
+            except Exception:
+                send_json(self, {"ok": False, "error": "فشل المعالجة (internal error)"}, 500)
                 return
             with open(out, "rb") as f:
                 blob = f.read()
         elapsed = round(time.perf_counter() - t0, 3)
-        safe = (os.path.basename(filename) or "file.bin") + ".tqz"
+        safe = sanitize_filename(filename, "file.bin") + ".tqz"
         if as_json:
             send_json(self, {"ok": True, "filename": safe, "orig": info.get("orig"),
                              "new": info.get("new"), "ratio": info.get("ratio"),

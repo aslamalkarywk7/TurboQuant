@@ -52,4 +52,6 @@ class CappedWriter:
         return self._fout.flush()
 
     def __getattr__(self, name):
-        return getattr(self.__fout__, name)
+        # NOTE: must use object.__getattribute__ to avoid infinite recursion
+        # (self._fout is the real file; self.__fout__ would mangle and re-enter here).
+        return getattr(object.__getattribute__(self, "_fout"), name)

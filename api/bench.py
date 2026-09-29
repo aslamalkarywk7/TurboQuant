@@ -4,13 +4,13 @@ from urllib.parse import urlparse, parse_qs
 import os, sys, tempfile
 sys.path.insert(0, os.path.dirname(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from _tq import cors, send_json, read_body, ensure_turboquant
+from _tq import cors, send_json, read_body, ensure_turboquant, _security
 
 class handler(BaseHTTPRequestHandler):
     def log_message(self, *a):
         pass
     def do_OPTIONS(self):
-        self.send_response(200); cors(self); self.end_headers()
+        self.send_response(200); cors(self); _security(self); self.end_headers()
     def do_POST(self):
         ensure_turboquant()
         u = urlparse(self.path)
@@ -32,7 +32,7 @@ class handler(BaseHTTPRequestHandler):
                 f.write(body)
             try:
                 rows = tq.benchmark(inp, modes=modes, advanced=advanced)
-            except Exception as e:
-                send_json(self, {"ok": False, "error": str(e)[:500]}, 500)
+            except Exception:
+                send_json(self, {"ok": False, "error": "فشل المعالجة (internal error)"}, 500)
                 return
         send_json(self, {"ok": True, "rows": rows, "table": tq.format_table(rows)})

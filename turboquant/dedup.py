@@ -106,22 +106,46 @@ def build_dedup_package(chunks: list[bytes], codec: str, mode: str, jobs: int = 
 
 def parse_dedup_package(blob: bytes) -> tuple[list[str], dict[str, bytes], str]:
     import json
-    off = 0
-    (mlen,) = struct.unpack_from(">I", blob, off); off += 4
-    man = json.loads(blob[off:off + mlen].decode()); off += mlen
-    (n,) = struct.unpack_from(">I", blob, off); off += 4
-    store = {}
-    for _ in range(n):
-        (sl,) = struct.unpack_from(">I", blob, off); off += 4
-        sha = blob[off:off + sl].decode(); off += sl
-        (dl,) = struct.unpack_from(">Q", blob, off); off += 8
-        store[sha] = blob[off:off + dl]; off += dl
-    return man["order"], store, man.get("codec", "lzma")
+    from .errors import CorruptPackageError
+    # Caps stop malicious mlen/n/dl from causing huge allocations.
+    MAX_MANIFEST = 100 * 1024 * 1024
+    try:
+        off = 0
+        if len(blob) < 4:
+            raise CorruptPackageError("حزمة dedup مقطوعة")
+        (mlen,) = struct.unpack_from(">I", blob, off); off += 4
+        if mlen < 2 or mlen > MAX_MANIFEST or len(blob) < off + mlen + 4:
+            raise CorruptPackageError("حزمة dedup تالفة (manifest طول غير منطقي)")
+        man = json.loads(blob[off:off + mlen].decode()); off += mlen
+        (n,) = struct.unpack_from(">I", blob, off); off += 4
+        if n > 10_000_000:
+            raise CorruptPackageError("حزمة dedup تالفة (عدد chunks غير منطقي)")
+        store = {}
+        for _ in range(n):
+            (sl,) = struct.unpack_from(">I", blob, off); off += 4
+            if sl < 1 or sl > 1024 or len(blob) < off + sl + 8:
+                raise CorruptPackageError("حزمة dedup تالفة (sha)")
+            sha = blob[off:off + sl].decode(); off += sl
+            (dl,) = struct.unpack_from(">Q", blob, off); off += 8
+            if dl > 1 << 31 or len(blob) < off + dl:
+                raise CorruptPackageError("حزمة dedup تالفة (blob مقطوع)")
+            store[sha] = blob[off:off + dl]; off += dl
+        return man["order"], store, man.get("codec", "lzma")
+    except CorruptPackageError:
+        raise
+    except (struct.error, KeyError, ValueError, UnicodeDecodeError) as e:
+        raise CorruptPackageError(f"حزمة dedup تالفة: {e}")
 
 def restore_dedup_package(blob: bytes) -> bytes:
     from .codecs import decompress_bytes
-    order, store, codec = parse_dedup_package(blob)
-    return b"".join(decompress_bytes(store[s], codec) for s in order)
+    from .errors import CorruptPackageError
+    try:
+        order, store, codec = parse_dedup_package(blob)
+        return b"".join(decompress_bytes(store[s], codec) for s in order)
+    except CorruptPackageError:
+        raise
+    except KeyError as e:
+        raise CorruptPackageError(f"حزمة dedup تالفة (chunk مفقود): {e}")
 
 def build_dedup_package_stream(chunks_iter, codec: str, mode: str, jobs: int = 1,
                                batch: int = 16):

@@ -3,13 +3,13 @@ from http.server import BaseHTTPRequestHandler
 import os, sys, tempfile
 sys.path.insert(0, os.path.dirname(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from _tq import cors, send_json, read_body, ensure_turboquant
+from _tq import cors, send_json, read_body, ensure_turboquant, _security
 
 class handler(BaseHTTPRequestHandler):
     def log_message(self, *a):
         pass
     def do_OPTIONS(self):
-        self.send_response(200); cors(self); self.end_headers()
+        self.send_response(200); cors(self); _security(self); self.end_headers()
     def do_POST(self):
         ensure_turboquant()
         body = read_body(self)
@@ -26,8 +26,8 @@ class handler(BaseHTTPRequestHandler):
                 f.write(body)
             try:
                 cert = tq.verify_package(inp)
-            except Exception as e:
-                send_json(self, {"ok": False, "error": str(e)[:500]}, 500)
+            except Exception:
+                send_json(self, {"ok": False, "error": "فشل المعالجة (internal error)"}, 500)
                 return
         send_json(self, {"ok": True, "verdict": cert.get("verdict"), "checks": cert.get("checks"),
                          "meta": cert.get("meta"), "quality": cert.get("quality"),

@@ -55,6 +55,8 @@ def _write_pkg(dst: str, meta: dict, body: bytes):
 
 def _read_pkg(src: str) -> tuple[dict, bytes, int]:
     from .errors import CorruptPackageError
+    # JSON meta is tiny; cap header to stop multi-GB allocation on malicious hl.
+    MAX_HEADER = 10 * 1024 * 1024
     with open(src, "rb") as f:
         magic = f.read(4)
         if magic == b"TQZ1":
@@ -63,7 +65,14 @@ def _read_pkg(src: str) -> tuple[dict, bytes, int]:
             raise CorruptPackageError("ليس ملف TurboQuant v2 (.tqz)")
         try:
             (hl,) = struct.unpack(HLEN, f.read(4))
-            meta = json.loads(f.read(hl).decode())
+            if hl < 2 or hl > MAX_HEADER:
+                raise CorruptPackageError("هيدر الحاوية تالف (طول غير منطقي)")
+            raw_head = f.read(hl)
+            if len(raw_head) != hl:
+                raise CorruptPackageError("حاوية مقطوعة (truncated header)")
+            meta = json.loads(raw_head.decode())
+        except CorruptPackageError:
+            raise
         except (struct.error, ValueError, UnicodeDecodeError) as e:
             raise CorruptPackageError(f"هيدر الحاوية تالف: {e}")
         off = 4 + 4 + hl

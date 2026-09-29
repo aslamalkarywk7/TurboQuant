@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+title: TurboQuant
+version: 2.4.0
+type: software
+license: MIT
+repository-code: https://github.com/aslamalkarywk7/TurboQuant
+abstract: Unified lossless compression library + REST + Web Console + multi-language bindings. Bit-identical, sha256 verified.
+authors:
+  - name: TurboQuant Contributors
+keywords:
+  - compression
+  - lossless
+  - deduplication
+  - zstd
+  - backup

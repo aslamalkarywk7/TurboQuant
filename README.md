@@ -120,13 +120,14 @@ python -m turboquant bench data.csv --advanced
   PNG filters • self-made zstd dictionaries • orchestrator auto-picks the winner — details in `docs/ADVANCED.md`.
 
 ## License & contributing
-- License: MIT (`LICENSE`) — use it freely inside commercial apps.
+- License: MIT (`LICENSE`) — use it freely inside commercial apps. Third-party notes: `THIRD-PARTY-NOTICES.md`. Cite: `CITATION.cff`.
 - History: `CHANGELOG.md` — releases since 2.x keep function names stable.
+- Contribute: `CONTRIBUTING.md` + `CODE_OF_CONDUCT.md`. Security: `SECURITY.md`. Help: `SUPPORT.md`.
 
 ## Usage from other languages
 ```bash
 pip install -e .
-python -m turboquant lossless report.pdf -o report.pdf --mode max
+python -m turboquant lossless report.pdf -o report.pdf.tqz --mode max
 python -m turboquant decompress report.pdf.tqz -o report.pdf
 python -m turboquant detect report.pdf
 python -m turboquant serve --port 8765   # REST for any language
@@ -163,7 +164,7 @@ turboquant-gui                                  # drag & drop UI (progress + can
 docker build -t turboquant . && docker run -p 8765:8765 turboquant   # ready REST
 ```
 - Copy-ready examples: `examples/example.py` • `example.js` • `Example.java` • `example.cs` • `example.go` • `example_rest.sh`
-- Publishing: `pip install turboquant[max]` / `npm i turboquant` + `scripts/install.*` scripts + CI in `.github/workflows/publish.yml`
+- Publishing: `pip install turboquant[max]` / `npm i turboquant` + `scripts/install.*` scripts + CI in `.github/workflows/release.yml`
 
 ## Install
 ```bash
@@ -173,3 +174,24 @@ pip install -e ".[full]"       # + pikepdf/soundfile (PDF/audio)
 pip install -e ".[secure]"     # + cryptography (encryption)
 pytest -q
 ```
+
+## Docs index (every question answered once) — hub: [docs/README](docs/README.md)
+
+| Doc | Answers |
+|---|---|
+| [ARCHITECTURE](docs/ARCHITECTURE.md) | layers, data flow, why stdlib server / smallest-wins / BWT choice |
+| [API](docs/API.md) | endpoints, params, `X-TQ-*` headers, errors |
+| [CONFIGURATION](docs/CONFIGURATION.md) | `TQ_MAX_MB/TQ_HOST/PORT/TQ_CORS_ORIGIN/TQ_DEBUG`, CLI flags, prod recipe |
+| [FAQ](docs/FAQ.md) | lossless vs lossy, incompressible files, modes, encryption, bindings, versions |
+| [TROUBLESHOOTING](docs/TROUBLESHOOTING.md) | exception table, HTTP codes, Docker/Vercel fixes, debug recipe |
+| [FORMAT](docs/FORMAT.md) | open `.tqz` spec for any language |
+| [ADVANCED](docs/ADVANCED.md) | entropy/BWT/delta/filters/zdict catalog |
+| [FEATURES](docs/FEATURES.md) | encryption / delta / parallel / media / GUI with copy-paste |
+| [PERFORMANCE](docs/PERFORMANCE.md) | measured tables (device, date, command) |
+| [WEB](docs/WEB.md) | local + Vercel console |
+| [PUBLISHING](docs/PUBLISHING.md) | tag → CI → PyPI/npm |
+| [ROADMAP](docs/ROADMAP.md) | next + non-goals |
+| [GLOSSARY](docs/GLOSSARY.md) | lossless, codec, transform, dedup, `.tqz/.tqze` |
+| [PROJECT-CHECKLIST](docs/PROJECT-CHECKLIST.md) | reuse for your other projects to reach the same bar |
+
+Community: [CONTRIBUTING](CONTRIBUTING.md) • [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md) • [SECURITY](SECURITY.md) • [SUPPORT](SUPPORT.md) • `.github/ISSUE_TEMPLATE/` • [.github/PULL_REQUEST_TEMPLATE](.github/PULL_REQUEST_TEMPLATE.md)

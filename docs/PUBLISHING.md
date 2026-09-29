@@ -6,7 +6,7 @@ pip install build twine
 python -m pytest tests/ -q          # يجب: كل ناجح
 python -m build                     # dist/*.whl + *.tar.gz
 twine check dist/*
-git tag v2.3.0 && git push origin v2.3.0   # الـ CI ينشر تلقائياً (trusted publishing)
+git tag v2.4.0 && git push origin v2.4.0   # الـ CI ينشر تلقائياً (trusted publishing)
 # يدوياً عند الحاجة: twine upload dist/*
 ```
 المتطلبات لمرة واحدة: مشروع `turboquant` على PyPI + OIDC publisher مربوط بالمستودع
@@ -15,8 +15,8 @@ git tag v2.3.0 && git push origin v2.3.0   # الـ CI ينشر تلقائياً
 ## Node (npm)
 ```bash
 node --check bindings/tqz-decode.mjs
-npm version 2.3.0 --no-git-tag-version   # مزامنة مع package.json
-git tag npm-2.3.0  # أو نفس وسم v2.3.0 — الـ CI ينشر بـ NPM_TOKEN
+npm version 2.4.0 --no-git-tag-version   # مزامنة مع package.json
+git tag npm-2.4.0  # أو نفس وسم v2.4.0 — الـ CI ينشر بـ NPM_TOKEN
 ```
 يتطلب `NPM_TOKEN` في أسرار المستودع.
 

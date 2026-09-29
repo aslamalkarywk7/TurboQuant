@@ -54,23 +54,50 @@ def compress_bytes(data: bytes, codec: str = "auto", mode: str = "balanced") -> 
         return bytes(data)
     raise ValueError(f"codec غير معروف: {codec}")
 
-def decompress_bytes(data: bytes, codec: str) -> bytes:
+def decompress_bytes(data: bytes, codec: str, max_output_bytes: int | None = None) -> bytes:
+    """Decompress with optional zip-bomb cap (None = auto 1GB min / 100000x ratio)."""
     codec = codec.lower()
     if codec == "zstd":
         import zstandard as zstd
-        return zstd.ZstdDecompressor().decompress(data)
+        # zstd supports an explicit output cap to stop decompression bombs early.
+        if max_output_bytes:
+            out = zstd.ZstdDecompressor().decompress(data, max_output_size=max_output_bytes)
+        else:
+            from .limits import resolve_cap
+            out = zstd.ZstdDecompressor().decompress(data, max_output_size=resolve_cap(None, len(data)))
+        _check_cap(out, len(data), max_output_bytes)
+        return out
     if codec == "brotli":
         import brotli
-        return brotli.decompress(data)
+        out = brotli.decompress(data)
+        _check_cap(out, len(data), max_output_bytes)
+        return out
     if codec == "lzma":
-        return lzma.decompress(data)
+        out = lzma.decompress(data)
+        _check_cap(out, len(data), max_output_bytes)
+        return out
     if codec == "bz2":
-        return bz2.decompress(data)
+        out = bz2.decompress(data)
+        _check_cap(out, len(data), max_output_bytes)
+        return out
     if codec == "gzip":
-        return gzip.decompress(data)
+        out = gzip.decompress(data)
+        _check_cap(out, len(data), max_output_bytes)
+        return out
     if codec == "store":
-        return bytes(data)
+        out = bytes(data)
+        _check_cap(out, len(data), max_output_bytes)
+        return out
     raise ValueError(codec)
+
+
+def _check_cap(out: bytes, compressed_len: int, max_output_bytes: int | None):
+    from .limits import resolve_cap
+    from .errors import OutputLimitError
+    cap = resolve_cap(max_output_bytes, compressed_len)
+    if len(out) > cap:
+        raise OutputLimitError(
+            f"تجاوز حد الإخراج ({len(out)} > {cap} بايت) — حاوية مشبوهة؟")
 
 def compress_stream(fin, fout, codec: str, mode: str = "balanced", chunk: int = 1 << 20,
                     on_chunk=None, cancel=None):

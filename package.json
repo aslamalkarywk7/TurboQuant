@@ -5,7 +5,7 @@
   "main": "bindings/turboquant.js",
   "keywords": ["compression", "lossless", "zstd", "dedup", "backup"],
   "license": "MIT",
-  "repository": "https://github.com/TurboQuant/turboquant",
+  "repository": "https://github.com/aslamalkarywk7/TurboQuant",
   "scripts": {
     "install-python": "pip install turboquant",
     "test": "node -e \"const tq=require('./bindings/turboquant.js'); console.log(Object.keys(tq))\""

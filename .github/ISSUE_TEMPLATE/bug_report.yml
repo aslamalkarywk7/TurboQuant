@@ -1,0 +1,22 @@
+name: Bug report
+description: Report a reproducible bug
+body:
+  - type: input
+    id: version
+    attributes: {label: Version, description: "turboquant.__version__ + pyproject + package.json (must match)"}
+    validations: {required: true}
+  - type: input
+    id: env
+    attributes: {label: Environment, description: "OS, Python (python --version), extras installed ([max]/[full]/[secure])"}
+    validations: {required: true}
+  - type: textarea
+    id: repro
+    attributes: {label: Repro steps, description: "Exact commands + file type/size. Attach smallest repro file if possible."}
+    validations: {required: true}
+  - type: textarea
+    id: expected
+    attributes: {label: Expected vs actual, description: "What should happen (byte-identical? PASS?) vs what happened (traceback? ratio?)"}
+    validations: {required: true}
+  - type: textarea
+    id: logs
+    attributes: {label: Logs, description: "Full traceback + bench/cert output. Run with TQ_DEBUG=1 if server-related."}

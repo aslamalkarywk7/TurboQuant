@@ -11,3 +11,6 @@ examples
 gui
 .gitignore
 Dockerfile
+.dockerignore
+.env
+.env.*

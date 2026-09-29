@@ -3,13 +3,13 @@ from http.server import BaseHTTPRequestHandler
 import os, sys, tempfile
 sys.path.insert(0, os.path.dirname(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from _tq import cors, send_json, send_bytes, read_body, ensure_turboquant
+from _tq import cors, send_json, send_bytes, read_body, ensure_turboquant, _security
 
 class handler(BaseHTTPRequestHandler):
     def log_message(self, *a):
         pass
     def do_OPTIONS(self):
-        self.send_response(200); cors(self); self.end_headers()
+        self.send_response(200); cors(self); _security(self); self.end_headers()
     def do_POST(self):
         ensure_turboquant()
         body = read_body(self)
@@ -27,8 +27,8 @@ class handler(BaseHTTPRequestHandler):
                 f.write(body)
             try:
                 info = tq.decompress_auto(inp, out)
-            except Exception as e:
-                send_json(self, {"ok": False, "error": str(e)[:500]}, 400)
+            except Exception:
+                send_json(self, {"ok": False, "error": "فشل المعالجة (internal error)"}, 400)
                 return
             with open(info.get("output", out), "rb") as f:
                 blob = f.read()

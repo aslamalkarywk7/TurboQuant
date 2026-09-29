@@ -4,8 +4,8 @@ Base URLs:
 - Production: `https://turbo-quant.vercel.app`
 - Local: `http://localhost:8765` (run `python -m turboquant serve --port 8765`)
 
-Auth: none. CORS: open (`Access-Control-Allow-Origin: *`).
-Limits: single request ≈ 4.5MB on Vercel (`TQ_MAX_MB`, default 25, controls the server cap). For bigger files run locally.
+Auth: none. CORS: configurable via `TQ_CORS_ORIGIN` (default `*` for backward compat — set your domain in production).
+Limits: single request ≈ 4.5MB on Vercel (`TQ_MAX_MB`, default 25 locally and on Vercel, controls the server cap). For bigger files run locally with `TQ_MAX_MB` raised.
 All `POST` endpoints take **raw file bytes** as the body (`Content-Type: application/octet-stream`) unless noted.
 Errors are JSON: `{"ok": false, "error": "..."}` with status `400` (bad input), `413` (over size limit), `500` (engine failure).
 

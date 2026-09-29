@@ -51,17 +51,26 @@ def decrypt_bytes(blob: bytes, password: str) -> bytes:
     AESGCM, PBKDF2HMAC, hashes = _need_crypto()
     if len(blob) < 8 or blob[:4] != MAGIC:
         raise CorruptPackageError("ليس ملف TurboQuant مشفراً (.tqze)")
-    (hl,) = struct.unpack_from(HLEN, blob, 4)
     try:
+        (hl,) = struct.unpack_from(HLEN, blob, 4)
+        # Header is tiny JSON (salt/nonce/iters); cap to stop huge-allocation DoS.
+        if hl < 2 or hl > 10 * 1024 * 1024:
+            raise CorruptPackageError("هيدر الحاوية المشفرة تالف (طول غير منطقي)")
+        if len(blob) < 8 + hl:
+            raise CorruptPackageError("حاوية مشفرة مقطوعة (truncated)")
         meta = json.loads(blob[8:8 + hl].decode())
         ct = blob[8 + hl:]
         kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32,
                          salt=_unb64(meta["salt"]), iterations=int(meta["iters"]))
         return AESGCM(kdf.derive(password.encode("utf-8"))).decrypt(_unb64(meta["nonce"]), ct, None)
-    except (InvalidTag, KeyError, ValueError) as e:
-        if isinstance(e, KeyError):
-            raise CorruptPackageError("حاوية مشفرة تالفة (هيدر)")
-        raise PasswordError("كلمة السر خطأ أو الملف تعرّض للعبث")
+    except InvalidTag as e:
+        raise PasswordError("كلمة السر خطأ أو الملف تعرّض للعبث") from e
+    except KeyError as e:
+        raise CorruptPackageError("حاوية مشفرة تالفة (هيدر)") from e
+    except (struct.error, ValueError, UnicodeDecodeError) as e:
+        # ValueError covers b64/int() failures; keep PasswordError for auth failures only.
+        # Heuristic: truncated/garbage header -> corrupt; GCM tag failure already handled above.
+        raise CorruptPackageError(f"حاوية مشفرة تالفة: {type(e).__name__}") from e
 
 def encrypt_file(src: str, dst: str | None = None, password: str = "") -> dict:
     """شفّر أي ملف (عادة .tqz بعد ضغطه) → .tqze."""
