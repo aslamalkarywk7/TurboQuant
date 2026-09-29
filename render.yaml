@@ -1,0 +1,11 @@
+# Render Blueprint — one-click deploy of TurboQuant (Docker)
+# Dashboard: Render → New → Blueprint → select aslamalkarywk7/TurboQuant → Apply
+services:
+  - type: web
+    name: turboquant
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: TQ_MAX_MB
+        value: 25
