@@ -4,6 +4,6 @@
 set -e
 echo "Installing TurboQuant..."
 python3 -m pip install --upgrade pip
-pip3 install "tqz[max]"
+pip3 install -e ".[max]"
 python3 -m turboquant detect --help >/dev/null
 echo "Done! Try: python3 -m turboquant lossless <file> -o out.tqz --mode max"

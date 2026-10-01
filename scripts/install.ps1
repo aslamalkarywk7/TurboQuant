@@ -4,6 +4,6 @@
 $ErrorActionPreference = "Stop"
 Write-Host "Installing TurboQuant..." -ForegroundColor Cyan
 python -m pip install --upgrade pip
-pip install "tqz[max]"
+pip install -e ".[max]"
 python -m turboquant detect --help | Out-Null
 Write-Host "Done! Try: python -m turboquant lossless <file> -o out.tqz --mode max" -ForegroundColor Green

@@ -4,7 +4,7 @@
 الناتج `.tqze`: MAGIC TQZE + هيدر JSON (salt/nonce/iters) + ciphertext + tag مدمج.
 فك التشفير يتحقق من السلامة تلقائياً (GCM): باسورد خطأ أو عبث → خطأ صريح.
 
-يتطلب: pip install "tqz[secure]" (حزمة cryptography).
+يتطلب: pip install -e ".[secure]" (حزمة cryptography).
 """
 from __future__ import annotations
 import base64
@@ -25,7 +25,7 @@ def _need_crypto():
         from cryptography.hazmat.primitives import hashes
         return AESGCM, PBKDF2HMAC, hashes
     except ImportError:
-        raise RuntimeError('التشفير يتطلب: pip install "tqz[secure]"')
+        raise RuntimeError('التشفير يتطلب: pip install -e ".[secure]"')
 
 def _b64(b: bytes) -> str:
     return base64.b64encode(b).decode()

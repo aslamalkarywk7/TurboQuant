@@ -4,7 +4,6 @@
 ثبّت المكتبة مرة واحدة:
 ```bash
 pip install -e /path/to/TurboQuant
-# أو: pip install tqz
 ```
 ثم من أي لغة نفّذ أمر النظام (أمثلة جاهزة بجانب هذا الملف):
 - `bindings/turboquant.js` (Node) — `compressLossless/decompress/compressViaRest`

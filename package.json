@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": "https://github.com/aslamalkarywk7/TurboQuant",
   "scripts": {
-    "install-python": "pip install tqz",
+    "install-python": "pip install -e .",
     "test": "node -e \"const tq=require('./bindings/turboquant.js'); console.log(Object.keys(tq))\""
   },
   "engines": { "node": ">=18" }
