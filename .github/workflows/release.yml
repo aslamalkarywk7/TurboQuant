@@ -13,7 +13,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install build twine
+      - run: pip install build twine pytest
+      - run: pip install -e ".[max,secure]"
       - run: python -m pytest tests/ -q
       - run: python -m build
       - run: twine check dist/*
