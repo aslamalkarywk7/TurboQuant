@@ -1,7 +1,7 @@
 [project]
-name = "turboquant"
-version = "2.4.0"
-description = "TurboQuant - ضغط lossless لكل الملفات بدون فقد جودة + صور lossy + bindings لكل اللغات"
+name = "tqz"
+version = "2.5.0"
+description = "tqz (TurboQuant) - lossless compression for every file type + web console"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -33,6 +33,8 @@ Documentation = "https://github.com/aslamalkarywk7/TurboQuant#readme"
 Repository = "https://github.com/aslamalkarywk7/TurboQuant"
 "Bug Tracker" = "https://github.com/aslamalkarywk7/TurboQuant/issues"
 [project.scripts]
+tqz = "turboquant.cli:main"
+tqz-gui = "gui.app:main"
 turboquant = "turboquant.cli:main"
 turboquant-gui = "gui.app:main"
 [build-system]

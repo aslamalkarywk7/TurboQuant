@@ -1,13 +1,13 @@
 {
-  "name": "turboquant",
-  "version": "2.4.0",
+  "name": "tqz",
+  "version": "2.5.0",
   "description": "TurboQuant - lossless compression for every file type (JS wrapper over Python CLI + REST). No quality loss, sha256 verified.",
   "main": "bindings/turboquant.js",
   "keywords": ["compression", "lossless", "zstd", "dedup", "backup"],
   "license": "MIT",
   "repository": "https://github.com/aslamalkarywk7/TurboQuant",
   "scripts": {
-    "install-python": "pip install turboquant",
+    "install-python": "pip install tqz",
     "test": "node -e \"const tq=require('./bindings/turboquant.js'); console.log(Object.keys(tq))\""
   },
   "engines": { "node": ">=18" }

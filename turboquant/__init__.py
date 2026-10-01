@@ -35,7 +35,7 @@ from .errors import (TurboQuantError, CorruptPackageError, UnsupportedCodecError
 from .log import logger, debug_mode
 from .utils import format_size
 
-__version__ = "2.4.0"
+__version__ = "2.5.0"
 __all__ = [
     "compress_lossless", "decompress_lossless", "compress_dir_lossless", "optimize_lossless",
     "compress_image", "compress_images_batch",

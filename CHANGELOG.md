@@ -1,5 +1,8 @@
 # CHANGELOG — سجل الإصدارات (API مستقر من 2.x)
 
+## 2.5.0 - PyPI distribution renamed to `tqz`
+- `pip install tqz[max]`: the PyPI name `turboquant` is owned by an unrelated project, so this library now publishes as `tqz` (new `tqz` / `tqz-gui` CLI aliases; old aliases kept). Python import (`import turboquant`), `.tqz` format, REST API and bindings are unchanged.
+
 ## Unreleased — hardening + community docs
 - أمان: `ThreadingHTTPServer` + ربط `0.0.0.0`، تعطيل `GET /detect?path=` (كان oracle)، سقف هيدر `10MB` في `lossless/crypto/dedup`، `decompress_bytes` بسقف، تعقيم أسماء الملفات، رسائل خطأ عامة + هيدرات `nosniff/DENY/no-referrer`، توحيد `TQ_MAX_MB=25`.
 - نشر: `Dockerfile` غير-root + `HEALTHCHECK` + `.dockerignore`، `release.yml` جديد، `ci.yml` يشمل `[secure]`، إسقاط `3.9` (الحد الأدنى `3.10` مثل Pillow 14/pytest 8)، إصلاح `package.json` repo URL.

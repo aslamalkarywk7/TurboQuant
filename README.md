@@ -2,9 +2,11 @@
 
 [![CI](https://github.com/aslamalkarywk7/TurboQuant/actions/workflows/ci.yml/badge.svg)](https://github.com/aslamalkarywk7/TurboQuant/actions/workflows/ci.yml)
 
+> Package name: install from PyPI as **`tqz`** (`pip install tqz`). The PyPI name `turboquant` belongs to a different project (Google KV-cache quantization), so this library publishes under `tqz` — the Python import stays `import turboquant`, the `.tqz` format and CLI are unchanged.
+
 ## One-command install
 ```bash
-pip install "turboquant[max]"          # recommended (zstd + brotli)
+pip install "tqz[max]"          # recommended (zstd + brotli)
 # Windows PowerShell: powershell -ExecutionPolicy Bypass -File scripts/install.ps1
 # Linux/macOS:        sh scripts/install.sh
 # From source: pip install -e ".[max]" then pytest -q
@@ -164,7 +166,7 @@ turboquant-gui                                  # drag & drop UI (progress + can
 docker build -t turboquant . && docker run -p 8765:8765 turboquant   # ready REST
 ```
 - Copy-ready examples: `examples/example.py` • `example.js` • `Example.java` • `example.cs` • `example.go` • `example_rest.sh`
-- Publishing: `pip install turboquant[max]` / `npm i turboquant` + `scripts/install.*` scripts + CI in `.github/workflows/release.yml`
+- Publishing: `pip install tqz[max]` / `npm i tqz` + `scripts/install.*` scripts + CI in `.github/workflows/release.yml`
 
 ## Install
 ```bash
